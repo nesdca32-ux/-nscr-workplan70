@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>แผนงาน กยป. ปีงบประมาณ 2570 · Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;700&display=swap">
+<style>
+:root{
+  color-scheme:light dark;
+  --bg:#F6F6F3; --panel:#FFFFFF; --fg:#1F2430; --muted:#5A6070; --line:#D9D8D2;
+  --chip-bg:#1F2430; --chip-fg:#FFFFFF; --grid:rgba(31,36,48,.10);
+  --bad:#B3261E; --warn:#955400; --ok:#1E6B3C;
+  --doing:#2858A0; --todo:#9AA0AE; --done:#2A7249; --crit:#C23B3B; --axis:#8A8F9C; --ref:#B8540F;
+  --p:#BF2A5C; --d:#2A7249; --c:#2858A0; --a:#B8540F;
+  --shadow:0 6px 20px rgba(0,0,0,.18);
+  --p-t:#9E1F4A; --d-t:#1D5A38; --c-t:#1C437E; --a-t:#8F400A; --done-bg:#DDDFE6; --legend-doing:#5C6070;
+  --blk:150px; --lbl:160px; --gap:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161B; --panel:#1D2027; --fg:#ECEEF3; --muted:#A3A9B8; --line:#3A3F4B;
+    --chip-bg:#E6E8EE; --chip-fg:#14161B; --grid:rgba(236,238,243,.12);
+    --bad:#FF8A80; --warn:#F2B25C; --ok:#7FD29B;
+    --doing:#6F9BE0; --todo:#6B7180; --done:#5FBF85; --crit:#FF7A70; --axis:#6B7180; --ref:#F0A15E;
+    --shadow:0 6px 20px rgba(0,0,0,.5);
+    --p-t:#FF8FB1; --d-t:#6FD39A; --c-t:#86AEF0; --a-t:#FFA366; --done-bg:#3A3F4B; --legend-doing:#8B91A3;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#14161B; --panel:#1D2027; --fg:#ECEEF3; --muted:#A3A9B8; --line:#3A3F4B;
+  --chip-bg:#E6E8EE; --chip-fg:#14161B; --grid:rgba(236,238,243,.12);
+  --bad:#FF8A80; --warn:#F2B25C; --ok:#7FD29B;
+  --doing:#6F9BE0; --todo:#6B7180; --done:#5FBF85; --crit:#FF7A70; --axis:#6B7180; --ref:#F0A15E;
+  --shadow:0 6px 20px rgba(0,0,0,.5);
+    --p-t:#FF8FB1; --d-t:#6FD39A; --c-t:#86AEF0; --a-t:#FFA366; --done-bg:#3A3F4B; --legend-doing:#8B91A3;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:'IBM Plex Sans Thai','Noto Sans Thai','Leelawadee UI',Tahoma,system-ui,sans-serif;font-size:15px;line-height:1.45;font-variant-numeric:tabular-nums}
+.app{max-width:1640px;margin:0 auto;padding:clamp(12px,2vw,28px);display:flex;flex-direction:column;gap:20px}
+.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px 24px}
+.title{margin:0;font-size:clamp(22px,2.6vw,32px);font-weight:700;line-height:1.2}
+.take{margin:6px 0 0;color:var(--muted);min-height:1.5em}
+.views{margin-left:auto;display:flex;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px}
+.vbtn{font:inherit;font-size:14px;font-weight:500;color:var(--muted);background:transparent;border:0;border-radius:999px;padding:6px 16px;cursor:pointer}
+.vbtn[aria-pressed=true]{background:var(--chip-bg);color:var(--chip-fg)}
+.controls{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)}
+.ctl{font:inherit;font-size:15px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 10px;min-height:36px}
+.btn{cursor:pointer}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr));gap:14px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:4px}
+.lab{font-size:12.5px;color:var(--muted)}
+.num{font-size:36px;font-weight:500;line-height:1.1}
+.sub-note{font-size:12.5px;color:var(--muted)}
+.note{margin:6px 0 0;font-size:12.5px;color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+.card-head{margin-bottom:14px}
+.head-row{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:flex-start}
+.h2{font-size:18px;font-weight:700;margin:0}
+.gantt{position:relative;min-height:240px;overflow-x:auto}
+.svg{display:block}
+.svg text{font-size:12.5px;fill:var(--muted);font-family:inherit}
+.svg .rowlab{fill:var(--fg);font-weight:500}
+.svg .sublab2{fill:var(--muted)}
+.svg .grouplab{fill:var(--fg);font-weight:700}
+.svg .sublab{fill:var(--muted);font-weight:500}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:12.5px;color:var(--muted)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.sw-dash{border:1px dashed var(--muted)}
+.tip{position:fixed;pointer-events:none;z-index:50;max-width:300px;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:8px 12px;font-size:12.5px}
+.tip-t{font-weight:700;margin-bottom:2px}
+.tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr));gap:14px;margin-bottom:14px}
+.tab{font:inherit;text-align:left;cursor:pointer;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 14px;display:flex;flex-direction:column;gap:2px}
+.tab[aria-selected=true]{border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
+.tab-n{font-size:28px;font-weight:500;line-height:1.15}
+.tab-l{font-size:12.5px;color:var(--muted)}
+.list{min-height:120px}
+.grp{margin:14px 0 6px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.sec{border-top:1px solid var(--line);padding:10px 0}
+.sec-head{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.no{color:var(--muted);min-width:2.2rem;flex:none}
+.sec-title{font-weight:700}
+.sec>.meta,.sec>.detail{padding-left:calc(2.2rem + 8px)}
+.push{margin-left:auto}
+.subs{margin:8px 0 0 calc(2.2rem + 8px);padding:0 0 0 14px;display:flex;flex-direction:column;gap:10px;border-left:2px solid var(--line)}
+.sub{display:grid;grid-template-columns:2.6rem minmax(0,1fr) auto;gap:2px 8px;align-items:start}
+.name{font-weight:500}
+.meta{font-size:12.5px;color:var(--muted)}
+.detail{margin-top:2px;font-size:12.5px;color:var(--muted)}
+.side{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.flag{font-size:12.5px;border:1px solid currentColor;border-radius:999px;padding:1px 8px;white-space:nowrap}
+.bad{color:var(--bad)} .warn{color:var(--warn)} .ok{color:var(--ok)} .mute{color:var(--muted)}
+.prog{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+.bar{display:inline-block;width:80px;height:6px;border-radius:3px;background:var(--grid);overflow:hidden}
+.bar-fill{display:block;height:100%;border-radius:3px;background:var(--todo)}
+.empty{color:var(--muted);padding:14px 0}
+.fail{display:flex;align-items:center;justify-content:center;gap:6px;min-height:120px;font-size:12.5px;color:var(--muted)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--bad)}
+[hidden]{display:none !important}
+footer.foot{font-size:12.5px;color:var(--muted)}
+@media (max-width:520px){.sub{grid-template-columns:2.6rem minmax(0,1fr)}.sub .side{grid-column:2;align-items:flex-start}.subs{margin-left:0}}
+
+/* ---- PDCA swimlane view ---- */
+.pd-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px 24px;margin-bottom:12px}
+.pd-title{margin:0;font-size:clamp(18px,2.2vw,28px);font-weight:700;line-height:1.25}
+.pd-pills{display:flex;flex-wrap:wrap;gap:8px}
+.pd-pill{font-size:13px;font-weight:500;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:4px 14px;white-space:nowrap}
+.pd-scroll{overflow-x:auto;padding-bottom:6px}
+.pd-board{min-width:1180px;display:flex;flex-direction:column;gap:10px}
+.pd-axis{display:flex;flex-direction:column;gap:3px}
+.pd-axis-row{display:flex}
+.pd-axis-sp{flex:none;margin-right:var(--gap);display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;width:calc(var(--blk) + var(--gap) + var(--lbl))}
+.pd-axis-sp.pd-dark{background:var(--chip-bg);color:var(--chip-fg);border-radius:6px}
+.pd-axis-sp.pd-mut{color:var(--muted)}
+.pd-axis-g{flex:1;min-width:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));padding-right:var(--gap)}
+.pd-q,.pd-m{margin:0 2px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.pd-q{grid-column:span 3;height:22px;background:var(--chip-bg);color:var(--chip-fg);font-size:12.5px}
+.pd-m{height:28px;background:var(--panel);border:1px solid var(--line);font-size:13px}
+.pd-lane{--k:var(--p);--kt:var(--p-t);display:flex;border-radius:14px;overflow:hidden;background:color-mix(in srgb,var(--k) 10%,var(--panel));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--k) 32%,var(--panel))}
+.pd-lane-p{--k:var(--p);--kt:var(--p-t)} .pd-lane-d{--k:var(--d);--kt:var(--d-t)} .pd-lane-c{--k:var(--c);--kt:var(--c-t)} .pd-lane-a{--k:var(--a);--kt:var(--a-t)}
+.pd-blk{flex:none;width:var(--blk);background:var(--k);color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 12px}
+.pd-blk-l{font-size:56px;font-weight:700;line-height:1}
+.pd-blk-w{font-size:14px;font-weight:700}
+.pd-rgt{flex:1;min-width:0;padding:10px var(--gap);display:flex;flex-direction:column;gap:10px;justify-content:center}
+.pd-stream{display:flex;gap:var(--gap);align-items:center}
+.pd-lbl{flex:none;width:var(--lbl)}
+.pd-lbl-n{font-size:12.5px;font-weight:700;line-height:1.3}
+.pd-lbl-t{font-size:12px;color:var(--muted)}
+.pd-tl{flex:1;min-width:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-rows:minmax(40px,auto);row-gap:4px;background-image:linear-gradient(to right,var(--grid) 1px,transparent 1px);background-size:calc(100%/12) 100%}
+.pd-bx{margin:0 2px;padding:5px 9px;border-radius:7px;background:var(--k);color:#fff;border:1.5px solid var(--k);font-size:12.5px;font-weight:500;line-height:1.3;display:flex;align-items:center}
+.pd-bx.pd-todo{background:transparent;color:var(--kt);border:1.5px dashed var(--k);justify-content:center;text-align:center}
+.pd-bx.pd-done{background:var(--done-bg);color:var(--muted);border-color:var(--done-bg)}
+.pd-bx.pd-hl{font-size:15px;font-weight:700;justify-content:center;text-align:center}
+.pd-foot{display:flex;flex-wrap:wrap;align-items:center;gap:10px 28px;margin-top:12px;font-size:13px}
+.pd-foot-i{display:inline-flex;align-items:center;gap:8px}
+.pd-sw{display:inline-block;width:34px;height:18px;border-radius:4px}
+.pd-sw-done{background:var(--done-bg);border:1px solid var(--line)}
+.pd-sw-doing{background:var(--legend-doing)}
+.pd-sw-todo{border:2px dashed var(--muted)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div>
+      <h1 class="title">แผนงาน กยป. ปีงบประมาณ 2570</h1>
+      <p class="take" id="take"></p>
+    </div>
+    <div class="views" role="group" aria-label="มุมมอง">
+      <button class="vbtn" type="button" data-view="dash" aria-pressed="true">แดชบอร์ดงาน</button>
+      <button class="vbtn" type="button" data-view="pdca" aria-pressed="false">สรุป PDCA</button>
+    </div>
+  </div>
+
+  <div id="view-dash" style="display:flex;flex-direction:column;gap:20px">
+    <div class="controls">
+      <label class="field"><span>วันที่อ้างอิง</span><input class="ctl" id="c-ref" type="date" min="2000-01-01" max="2099-12-31" aria-label="วันที่อ้างอิง"></label>
+      <label class="field"><span>ปีงบประมาณเริ่ม</span><select class="ctl" id="c-fy" aria-label="เดือนที่เริ่มปีงบประมาณ"><option value="10-01">1 ต.ค.</option><option value="01-01">1 ม.ค.</option></select></label>
+      <label class="field"><span>แจ้งเตือนล่วงหน้า</span><select class="ctl" id="c-near" aria-label="จำนวนวันที่แจ้งเตือนล่วงหน้า"><option value="3">3 วัน</option><option value="7">7 วัน</option><option value="14">14 วัน</option></select></label>
+      <label class="field"><span>ทีม</span><select class="ctl" id="c-team" aria-label="ทีม"><option value="all">ทุกทีม</option></select></label>
+      <button class="ctl btn" id="c-reset" type="button">รีเซ็ต</button>
+    </div>
+
+    <section>
+      <div class="kpis">
+        <div class="tile"><div class="lab">งานทั้งหมดในแผน</div><div class="num" id="k-total">—</div><div class="sub-note">ใน <span id="k-majors">—</span> หัวข้อใหญ่ จาก <span id="k-teams">—</span> ทีม</div></div>
+        <div class="tile"><div class="lab">กำลังทำ</div><div class="num" id="k-doing">—</div><div class="sub-note">อยู่ระหว่างดำเนินการ</div></div>
+        <div class="tile"><div class="lab">รอเริ่ม</div><div class="num" id="k-todo">—</div><div class="sub-note">ยังไม่ได้เริ่มลงมือ</div></div>
+        <div class="tile"><div class="lab">เสร็จแล้ว</div><div class="num" id="k-done">—</div><div class="sub-note">ทุกปีงบประมาณที่บันทึกไว้</div></div>
+      </div>
+      <p class="note">นับเฉพาะงานย่อย (หัวข้อย่อย หรือหัวข้อใหญ่ที่ไม่มีหัวข้อย่อย) ของทุกทีม</p>
+    </section>
+
+    <section class="card">
+      <div class="card-head head-row">
+        <div>
+          <h2 class="h2">Timeline งาน</h2>
+          <p class="note">จัดกลุ่มตามทีม กลุ่มงาน และหัวข้อใหญ่ · คลิกหัวข้อใหญ่เพื่อดูหัวข้อย่อย · เส้นประคือวันที่อ้างอิง · งานที่แผนระบุเป็นเดือนใช้วันแรก–วันสุดท้ายของเดือน</p>
+        </div>
+        <button class="ctl btn" id="c-expand" type="button">ขยายหัวข้อย่อยทั้งหมด</button>
+      </div>
+      <div class="gantt" id="gantt"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2 class="h2">Plan checker</h2>
+        <p class="note" id="checker-note"></p>
+      </div>
+      <div class="tabs" role="tablist">
+        <button class="tab" type="button" role="tab" data-tab="doing" aria-selected="true"><span class="tab-n" id="n-doing">—</span><span class="tab-l">งานที่อยู่ระหว่างจัดทำ</span></button>
+        <button class="tab" type="button" role="tab" data-tab="near" aria-selected="false"><span class="tab-n" id="n-near">—</span><span class="tab-l" id="l-near">งานที่ใกล้เลยกำหนด</span></button>
+        <button class="tab" type="button" role="tab" data-tab="done" aria-selected="false"><span class="tab-n" id="n-done">—</span><span class="tab-l" id="l-done">งานที่เสร็จในปีงบประมาณนี้</span></button>
+      </div>
+      <div class="list" id="list" role="tabpanel"></div>
+    </section>
+  </div>
+
+  <div id="view-pdca" hidden>
+    <div class="pd-head">
+      <h2 class="pd-title">สรุปแผนงาน กยป. ปีงบประมาณ 2570 ตามวงจร PDCA</h2>
+      <div class="pd-pills"><span class="pd-pill">ทีม TPMAP</span><span class="pd-pill">ทีมแผนแม่บท</span><span class="pd-pill">ทีม eMENSCR</span></div>
+    </div>
+    <div class="pd-scroll">
+      <div class="pd-board">
+        <div class="pd-axis"><div class="pd-axis-row"><div class="pd-axis-sp pd-dark">ปีงบประมาณ 2570</div><div class="pd-axis-g"><div class="pd-q">ไตรมาส 1</div><div class="pd-q">ไตรมาส 2</div><div class="pd-q">ไตรมาส 3</div><div class="pd-q">ไตรมาส 4</div></div></div><div class="pd-axis-row"><div class="pd-axis-sp pd-mut">ต.ค. 69 – ก.ย. 70</div><div class="pd-axis-g"><div class="pd-m">ต.ค. 69</div><div class="pd-m">พ.ย. 69</div><div class="pd-m">ธ.ค. 69</div><div class="pd-m">ม.ค. 70</div><div class="pd-m">ก.พ. 70</div><div class="pd-m">มี.ค. 70</div><div class="pd-m">เม.ย. 70</div><div class="pd-m">พ.ค. 70</div><div class="pd-m">มิ.ย. 70</div><div class="pd-m">ก.ค. 70</div><div class="pd-m">ส.ค. 70</div><div class="pd-m">ก.ย. 70</div></div></div></div>
+        <section class="pd-lane pd-lane-p" aria-label="Plan"><div class="pd-blk"><div class="pd-blk-l">P</div><div class="pd-blk-w">Plan</div></div><div class="pd-rgt"><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">ปรับปรุงแผนแม่บทฯ</div><div class="pd-lbl-t">ทีมแผนแม่บท</div></div><div class="pd-tl"><div class="pd-bx" style="grid-column: 1 / 6; grid-row: 1">ทบทวนยุทธศาสตร์ · เตรียมข้อมูล · เอกสารเสนอ คจย.</div><div class="pd-bx pd-todo" style="grid-column: 6 / 10; grid-row: 1">ปรับแก้ไขแผนแม่บทฯ (คณะทำงาน · ประชุมกับประธาน คจย.)</div><div class="pd-bx pd-todo" style="grid-column: 10 / 11; grid-row: 1">ประกาศใช้</div><div class="pd-bx pd-todo" style="grid-column: 11 / 13; grid-row: 1">หน่วยงานนำไปปฏิบัติ → มีผล 1 ต.ค. 70</div><div class="pd-bx pd-todo" style="grid-column: 5 / 7; grid-row: 2">ประชุม คจย./คกก.ยช. 1/70 → ครม. ให้ความเห็นชอบ</div><div class="pd-bx pd-todo" style="grid-column: 8 / 10; grid-row: 2">คกก.ยช. 2/70 → ครม. + ราชกิจจาฯ</div></div></div><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">ขับเคลื่อนแผนฯ 14 เสาภาครัฐ</div><div class="pd-lbl-t">ทีมแผนแม่บท</div></div><div class="pd-tl"><div class="pd-bx" style="grid-column: 1 / 2; grid-row: 1">สภาพัฒนาฯ เห็นชอบร่าง</div><div class="pd-bx pd-todo" style="grid-column: 5 / 8; grid-row: 1">คกก.ยุทธศาสตร์ชาติ/ครม. เห็นชอบร่างแผนฯ 14</div><div class="pd-bx pd-todo" style="grid-column: 10 / 13; grid-row: 1">รัฐสภารับทราบ → ทูลเกล้าฯ → คาดประกาศใช้ ต.ค. 70</div><div class="pd-bx" style="grid-column: 1 / 13; grid-row: 2">ปรับปรุงตามความเห็นเพิ่มเติม · สร้าง Buy-in · กำหนดโครงการ Flagship · ออกแบบกลไกขับเคลื่อน (ต.ค. 69 – ก.ย. 70)</div></div></div></div></section>
+<section class="pd-lane pd-lane-d" aria-label="DO"><div class="pd-blk"><div class="pd-blk-l">D</div><div class="pd-blk-w">DO</div></div><div class="pd-rgt"><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">TPMAP</div><div class="pd-lbl-t">ทีม TPMAP</div></div><div class="pd-tl"><div class="pd-bx" style="grid-column: 1 / 5; grid-row: 1">งานจ้างปรับปรุงและบำรุงรักษาระบบ TPMAP (ถึง 7 ม.ค. 70)</div><div class="pd-bx" style="grid-column: 1 / 7; grid-row: 2">งานจ้างศึกษายกระดับธรรมาภิบาลข้อมูล (ก.ย. 69 – 16 มี.ค. 70)</div><div class="pd-bx pd-hl" style="grid-column: 1 / 13; grid-row: 3">พัฒนา TPMAP+ 2 ปี (ปีงบ 70–71): ระยะแรก</div><div class="pd-bx pd-todo" style="grid-column: 1 / 7; grid-row: 4">ทบทวนวิธีการคำนวณคนเป้าหมายของระบบ TPMAP (6 เดือนแรก)</div><div class="pd-bx pd-todo" style="grid-column: 7 / 13; grid-row: 4">พัฒนาระบบ TPMAP+ ตามแนวทางการทบทวน (6 เดือนหลัง – ต่อเนื่องถึงปี 2571)</div><div class="pd-bx" style="grid-column: 1 / 2; grid-row: 5">TPMAP+ ตั้ง คกก. TOR</div><div class="pd-bx pd-todo" style="grid-column: 2 / 3; grid-row: 5">จัดทำ TOR</div><div class="pd-bx pd-todo" style="grid-column: 3 / 4; grid-row: 5">คัดเลือก</div><div class="pd-bx pd-todo" style="grid-column: 4 / 5; grid-row: 5">ลงนามสัญญา</div></div></div><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">ยุทธศาสตร์จัดสรรงบ 71</div><div class="pd-lbl-t">ทีมแผนแม่บท</div></div><div class="pd-tl"><div class="pd-bx" style="grid-column: 1 / 2; grid-row: 1">สศช. ทอนเป้าหมาย</div><div class="pd-bx pd-todo" style="grid-column: 2 / 13; grid-row: 1">สำนักงบประมาณรวบรวม กำหนดยุทธศาสตร์ เสนอ ครม. (พ.ย. 69 – ก.ย. 70) → หน่วยรับงบประมาณจัดทำคำขอ ต.ค.–ธ.ค. 70</div></div></div></div></section>
+<section class="pd-lane pd-lane-c" aria-label="CHECK"><div class="pd-blk"><div class="pd-blk-l">C</div><div class="pd-blk-w">CHECK</div></div><div class="pd-rgt"><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">รายงานประจำปี 2569</div><div class="pd-lbl-t">ทีมแผนแม่บท</div></div><div class="pd-tl"><div class="pd-bx" style="grid-column: 1 / 3; grid-row: 1">ขอข้อมูล + ยกร่าง template</div><div class="pd-bx pd-todo" style="grid-column: 4 / 5; grid-row: 1">เผยแพร่ภายใน 28 ม.ค.</div><div class="pd-bx pd-todo" style="grid-column: 2 / 7; grid-row: 2">จัดทำรายงาน: layout กับโรงพิมพ์ · ตรวจเนื้อหา · เสนอผู้บริหาร · จัดพิมพ์รูปเล่ม (พ.ย. 69 – มี.ค. 70)</div></div></div><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">eMENSCR+ (เปลี่ยนผ่านสู่ระบบ)</div><div class="pd-lbl-t">ทีม eMENSCR</div></div><div class="pd-tl"><div class="pd-bx" style="grid-column: 1 / 4; grid-row: 1">Management: ชะลอนำเข้าระบบเดิม · เชื่อม GFMIS · รายงานผลปี 69</div><div class="pd-bx pd-todo" style="grid-column: 4 / 13; grid-row: 1">เปิดใช้งาน eMENSCR+ กับทุกหน่วยงานรัฐ (ม.ค. 70 เป็นต้นไป)</div><div class="pd-bx pd-todo" style="grid-column: 2 / 4; grid-row: 2">Training &amp; Pilot (นำร่อง 7 แห่ง) + อบรมออนไลน์</div><div class="pd-bx pd-todo" style="grid-column: 4 / 7; grid-row: 2">ห้องเรียน On Demand ทุกวันพฤหัส</div></div></div></div></section>
+<section class="pd-lane pd-lane-a" aria-label="ACT"><div class="pd-blk"><div class="pd-blk-l">A</div><div class="pd-blk-w">ACT</div></div><div class="pd-rgt"><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">คณะกรรมการยุทธศาสตร์ชาติ (คกก.ยช.)</div><div class="pd-lbl-t">ทีมแผนแม่บท</div></div><div class="pd-tl"><div class="pd-bx pd-todo" style="grid-column: 4 / 5; grid-row: 1">แจ้งเผยแพร่รายงาน</div><div class="pd-bx pd-todo" style="grid-column: 5 / 7; grid-row: 1">คกก.ยช. 1/70: หลักการปรับแผนแม่บทฯ + ตั้ง คจย.</div><div class="pd-bx pd-todo" style="grid-column: 8 / 10; grid-row: 1">คกก.ยช. 2/70: เห็นชอบ (ร่าง) แผนแม่บทฯ</div><div class="pd-bx pd-todo" style="grid-column: 5 / 8; grid-row: 2">เห็นชอบร่างแผนฯ 14 (คกก.ยุทธศาสตร์ชาติ/ครม.)</div><div class="pd-bx pd-todo" style="grid-column: 10 / 13; grid-row: 2">ผลที่ตามมา: แผนแม่บทฯ มีผล 1 ต.ค. 70 · คาดประกาศใช้แผนฯ 14 ต.ค. 70</div></div></div></div></section>
+      </div>
+    </div>
+    <div class="pd-foot">
+      <strong>สถานะ ณ 19 ต.ค. 69</strong>
+      <span class="pd-foot-i"><span class="pd-sw pd-sw-done"></span>ดำเนินการแล้ว</span>
+      <span class="pd-foot-i"><span class="pd-sw pd-sw-doing"></span>อยู่ระหว่างจัดทำ</span>
+      <span class="pd-foot-i"><span class="pd-sw pd-sw-todo"></span>รอดำเนินการต่อไป</span>
+    </div>
+  </div>
+
+  <footer class="foot">เอกสารใช้ภายใน · ข้อมูลอยู่ในส่วน <code>tasks-data</code> ท้ายไฟล์นี้ แก้ไขแล้วบันทึกได้เลย</footer>
+</div>
+
+<div class="tip" id="tip" hidden></div>
+
+<script type="application/json" id="tasks-data">
+[
+{"id": "A1", "parent": "", "task": "งานจ้างปรับปรุงและบำรุงรักษาระบบ TPMAP", "team": "TPMAP", "group": "งานจ้าง TPMAP ปี 69", "basis": "own", "status": "กำลังทำ", "start": "2026-01-06", "due": "2027-01-07", "completed": "", "progress": "", "detail": "12 เดือน (เริ่ม 6 ม.ค. 69 สิ้นสุด 7 ม.ค. 70) · งบ PDCA 5 แสนบาท (ครั้งที่ 1) · เพื่อเพิ่มประสิทธิภาพในการชี้เป้ากลุ่มเป้าหมายในการขับเคลื่อนยุทธศาสตร์ชาติ"},
+{"id": "A1-1", "parent": "A1", "task": "คำนวณและจัดทำข้อมูลกลุ่มเป้าหมาย ปี 2569", "team": "TPMAP", "group": "งานจ้าง TPMAP ปี 69", "basis": "parent", "status": "กำลังทำ", "start": "2026-01-06", "due": "2027-01-07", "completed": "", "progress": "", "detail": ""},
+{"id": "A1-2", "parent": "A1", "task": "ปรับปรุงเว็บไซต์ TPMAP / Dashboard / Log book / Analytics / Pivot / Fragile", "team": "TPMAP", "group": "งานจ้าง TPMAP ปี 69", "basis": "parent", "status": "กำลังทำ", "start": "2026-01-06", "due": "2027-01-07", "completed": "", "progress": "", "detail": ""},
+{"id": "A1-3", "parent": "A1", "task": "บริหารจัดการช่องทางการสื่อสาร TPMAP", "team": "TPMAP", "group": "งานจ้าง TPMAP ปี 69", "basis": "parent", "status": "กำลังทำ", "start": "2026-01-06", "due": "2027-01-07", "completed": "", "progress": "", "detail": ""},
+{"id": "A1-4", "parent": "A1", "task": "บำรุงรักษาระบบ TPMAP", "team": "TPMAP", "group": "งานจ้าง TPMAP ปี 69", "basis": "parent", "status": "กำลังทำ", "start": "2026-01-06", "due": "2027-01-07", "completed": "", "progress": "", "detail": ""},
+{"id": "A2", "parent": "", "task": "งานจ้างศึกษาเพื่อยกระดับธรรมาภิบาลข้อมูลและการบริหารจัดการข้อมูลของ TPMAP", "team": "TPMAP", "group": "งานจ้าง TPMAP ปี 69", "basis": "own", "status": "กำลังทำ", "start": "2026-09-16", "due": "2027-03-16", "completed": "", "progress": "", "detail": "6 เดือน (เริ่ม 16 ก.ย. 69 สิ้นสุด 16 มี.ค. 70) · งบ PDCA 5 แสนบาท (ครั้งที่ 2)"},
+{"id": "A2-1", "parent": "A2", "task": "การศึกษาสถานะการบริหารจัดการข้อมูลของ TPMAP", "team": "TPMAP", "group": "งานจ้าง TPMAP ปี 69", "basis": "parent", "status": "กำลังทำ", "start": "2026-09-16", "due": "2027-03-16", "completed": "", "progress": "", "detail": ""},
+{"id": "A2-2", "parent": "A2", "task": "จัดทำกรอบและข้อเสนอแนวทางการกำกับดูแลข้อมูล (Data Governance Framework)", "team": "TPMAP", "group": "งานจ้าง TPMAP ปี 69", "basis": "parent", "status": "กำลังทำ", "start": "2026-09-16", "due": "2027-03-16", "completed": "", "progress": "", "detail": ""},
+{"id": "A2-3", "parent": "A2", "task": "จัดทำทะเบียนข้อมูลและ Metadata", "team": "TPMAP", "group": "งานจ้าง TPMAP ปี 69", "basis": "parent", "status": "กำลังทำ", "start": "2026-09-16", "due": "2027-03-16", "completed": "", "progress": "", "detail": ""},
+{"id": "A2-4", "parent": "A2", "task": "จัดทำแนวทางการบริหารจัดการข้อมูล", "team": "TPMAP", "group": "งานจ้าง TPMAP ปี 69", "basis": "parent", "status": "กำลังทำ", "start": "2026-09-16", "due": "2027-03-16", "completed": "", "progress": "", "detail": ""},
+{"id": "A2-5", "parent": "A2", "task": "จัดทำแนวทางการเปิดเผยและแลกเปลี่ยนข้อมูลตามหลัก Open by Default", "team": "TPMAP", "group": "งานจ้าง TPMAP ปี 69", "basis": "parent", "status": "กำลังทำ", "start": "2026-09-16", "due": "2027-03-16", "completed": "", "progress": "", "detail": ""},
+{"id": "B1", "parent": "", "task": "เตรียมการ: ขอแต่งตั้ง คกก. TOR", "team": "TPMAP", "group": "TPMAP+ (จ้างที่ปรึกษา)", "basis": "own", "status": "กำลังทำ", "start": "2026-10-19", "due": "2026-10-31", "completed": "", "progress": "", "detail": "19–31 ต.ค. 69 · การจ้างที่ปรึกษาโดยวิธีคัดเลือก ดำเนินการระหว่าง ต.ค. 69 – ม.ค. 70"},
+{"id": "B1-1", "parent": "B1", "task": "ทำเรื่องขอแต่งตั้ง คกก. TOR: ดำเนินการเสนอเรื่อง/ขออนุมัติ", "team": "TPMAP", "group": "TPMAP+ (จ้างที่ปรึกษา)", "basis": "parent", "status": "กำลังทำ", "start": "2026-10-19", "due": "2026-10-31", "completed": "", "progress": "", "detail": "เริ่ม 19 ต.ค. 69"},
+{"id": "B1-2", "parent": "B1", "task": "ออกคำสั่งแต่งตั้ง คกก. TOR (เป็นจุดเริ่มนับ TOR)", "team": "TPMAP", "group": "TPMAP+ (จ้างที่ปรึกษา)", "basis": "parent", "status": "กำลังทำ", "start": "2026-10-19", "due": "2026-10-31", "completed": "", "progress": "", "detail": "ปลาย ต.ค. 69 (โดยประมาณ)"},
+{"id": "B2", "parent": "", "task": "จัดทำ TOR กำหนดขอบเขตงาน", "team": "TPMAP", "group": "TPMAP+ (จ้างที่ปรึกษา)", "basis": "own", "status": "รอเริ่ม", "start": "2026-11-01", "due": "2026-11-30", "completed": "", "progress": "", "detail": "พ.ย. 69"},
+{"id": "B2-1", "parent": "B2", "task": "คกก. TOR จัดทำ TOR/ขอบเขตงานหลังคำสั่งแต่งตั้ง", "team": "TPMAP", "group": "TPMAP+ (จ้างที่ปรึกษา)", "basis": "parent", "status": "รอเริ่ม", "start": "2026-11-01", "due": "2026-11-30", "completed": "", "progress": "", "detail": "ไม่เกิน 20 วัน"},
+{"id": "B2-2", "parent": "B2", "task": "TOR แล้วเสร็จ/เสนอเห็นชอบ", "team": "TPMAP", "group": "TPMAP+ (จ้างที่ปรึกษา)", "basis": "parent", "status": "รอเริ่ม", "start": "2026-11-01", "due": "2026-11-30", "completed": "", "progress": "", "detail": "ภายใน พ.ย."},
+{"id": "B3", "parent": "", "task": "คัดเลือก: เชิญชวนและพิจารณา", "team": "TPMAP", "group": "TPMAP+ (จ้างที่ปรึกษา)", "basis": "own", "status": "รอเริ่ม", "start": "2026-12-01", "due": "2026-12-31", "completed": "", "progress": "", "detail": "ธ.ค. 69"},
+{"id": "B3-1", "parent": "B3", "task": "เชิญที่ปรึกษา/รับข้อเสนอ", "team": "TPMAP", "group": "TPMAP+ (จ้างที่ปรึกษา)", "basis": "own", "status": "รอเริ่ม", "start": "2026-12-01", "due": "2026-12-15", "completed": "", "progress": "", "detail": "ต้น–กลาง ธ.ค. 69"},
+{"id": "B3-2", "parent": "B3", "task": "พิจารณาข้อเสนอ", "team": "TPMAP", "group": "TPMAP+ (จ้างที่ปรึกษา)", "basis": "own", "status": "รอเริ่ม", "start": "2026-12-16", "due": "2026-12-31", "completed": "", "progress": "", "detail": "กลาง–ปลาย ธ.ค. 69"},
+{"id": "B3-3", "parent": "B3", "task": "รายงานผล/เสนออนุมัติ", "team": "TPMAP", "group": "TPMAP+ (จ้างที่ปรึกษา)", "basis": "own", "status": "รอเริ่ม", "start": "2026-12-25", "due": "2026-12-31", "completed": "", "progress": "", "detail": "ปลาย ธ.ค. 69"},
+{"id": "B4", "parent": "", "task": "ทำสัญญา: ประกาศผลและลงนาม", "team": "TPMAP", "group": "TPMAP+ (จ้างที่ปรึกษา)", "basis": "own", "status": "รอเริ่ม", "start": "2027-01-01", "due": "2027-01-31", "completed": "", "progress": "", "detail": "ม.ค. 70"},
+{"id": "B4-1", "parent": "B4", "task": "ประกาศผล/เตรียมเอกสาร", "team": "TPMAP", "group": "TPMAP+ (จ้างที่ปรึกษา)", "basis": "parent", "status": "รอเริ่ม", "start": "2027-01-01", "due": "2027-01-31", "completed": "", "progress": "", "detail": ""},
+{"id": "B4-2", "parent": "B4", "task": "ลงนามสัญญา", "team": "TPMAP", "group": "TPMAP+ (จ้างที่ปรึกษา)", "basis": "own", "status": "รอเริ่ม", "start": "2027-01-11", "due": "2027-01-20", "completed": "", "progress": "", "detail": "เป้าหมายกลาง ม.ค. 70"},
+{"id": "B5", "parent": "", "task": "พัฒนา TPMAP+ 2 ปี (ปีงบ 70–71): ระยะแรก", "team": "TPMAP", "group": "TPMAP+ (จ้างที่ปรึกษา)", "basis": "own", "status": "กำลังทำ", "start": "2026-10-01", "due": "2027-09-30", "completed": "", "progress": "", "detail": "งบรายจ่ายอื่น ปี 70 = 18,353,000 บาท ปี 71 = 40,243,200 บาท รวม 58,596,200 บาท · คาดว่าได้งบประมาณ พ.ย. 69 · ระยะที่ 2 พัฒนาและยกระดับ TPMAP Plus ส่วนอื่น ๆ (Logbook/Pivot/DB) ต่อในปีงบ 71"},
+{"id": "B5-1", "parent": "B5", "task": "ทบทวนวิธีการคำนวณคนเป้าหมายของระบบ TPMAP (6 เดือนแรก)", "team": "TPMAP", "group": "TPMAP+ (จ้างที่ปรึกษา)", "basis": "own", "status": "รอเริ่ม", "start": "2026-10-01", "due": "2027-03-31", "completed": "", "progress": "", "detail": ""},
+{"id": "B5-2", "parent": "B5", "task": "พัฒนาระบบ TPMAP+ ตามแนวทางการทบทวน (6 เดือนหลัง)", "team": "TPMAP", "group": "TPMAP+ (จ้างที่ปรึกษา)", "basis": "own", "status": "รอเริ่ม", "start": "2027-04-01", "due": "2027-09-30", "completed": "", "progress": "", "detail": "ต่อเนื่องไปถึงปีงบประมาณ 2571"},
+{"id": "RA1", "parent": "", "task": "การขอข้อมูลประกอบการจัดทำรายงานประจำปี", "team": "แผนแม่บท", "group": "รายงานประจำปี 2569", "basis": "own", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-11-30", "completed": "", "progress": "", "detail": "ต.ค.–พ.ย. 69"},
+{"id": "RA1-1", "parent": "RA1", "task": "กยป. ยกร่าง ส. เพื่อดำเนินการขอข้อมูลจากหน่วยงาน", "team": "แผนแม่บท", "group": "รายงานประจำปี 2569", "basis": "parent", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-11-30", "completed": "", "progress": "", "detail": ""},
+{"id": "RA1-2", "parent": "RA1", "task": "กยป. ยกร่าง template รายงานประจำปี", "team": "แผนแม่บท", "group": "รายงานประจำปี 2569", "basis": "parent", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-11-30", "completed": "", "progress": "", "detail": ""},
+{"id": "RA1-3", "parent": "RA1", "task": "กยป. ยกร่างบันทึกข้อความนำเรียนผู้บริหารสายงาน เพื่อขอความอนุเคราะห์กองดำเนินการจัดทำรายงานประจำปี", "team": "แผนแม่บท", "group": "รายงานประจำปี 2569", "basis": "parent", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-11-30", "completed": "", "progress": "", "detail": ""},
+{"id": "RA2", "parent": "", "task": "กระบวนการจัดทำรายงานประจำปี", "team": "แผนแม่บท", "group": "รายงานประจำปี 2569", "basis": "own", "status": "รอเริ่ม", "start": "2026-11-01", "due": "2027-03-31", "completed": "", "progress": "", "detail": "พ.ย. 69 – มี.ค. 70"},
+{"id": "RA2-1", "parent": "RA2", "task": "กองดำเนินการจัดทำรายงานประจำปี", "team": "แผนแม่บท", "group": "รายงานประจำปี 2569", "basis": "own", "status": "รอเริ่ม", "start": "2026-11-01", "due": "2026-11-30", "completed": "", "progress": "", "detail": "ช่วง พ.ย. 69 ตามแผน"},
+{"id": "RA2-2", "parent": "RA2", "task": "Layout กับทางโรงพิมพ์ในส่วนของหน้าปก + template", "team": "แผนแม่บท", "group": "รายงานประจำปี 2569", "basis": "own", "status": "รอเริ่ม", "start": "2026-11-01", "due": "2026-11-30", "completed": "", "progress": "", "detail": "ช่วง พ.ย. 69 ตามแผน"},
+{"id": "RA2-3", "parent": "RA2", "task": "กยป. ตรวจสอบความถูกต้องของเนื้อหาของแผนแม่บทฯ + ยกร่างเนื้อหามิติยุทธทั้ง 6 ด้าน", "team": "แผนแม่บท", "group": "รายงานประจำปี 2569", "basis": "own", "status": "รอเริ่ม", "start": "2026-11-01", "due": "2026-11-30", "completed": "", "progress": "", "detail": "ช่วง พ.ย. 69 ตามแผน"},
+{"id": "RA2-4", "parent": "RA2", "task": "เสนอ (ร่าง) รายงานประจำปีต่อผู้บริหารสายงานพิจารณา", "team": "แผนแม่บท", "group": "รายงานประจำปี 2569", "basis": "own", "status": "รอเริ่ม", "start": "2026-11-01", "due": "2026-12-31", "completed": "", "progress": "", "detail": "พ.ย.–ธ.ค. 69"},
+{"id": "RA2-5", "parent": "RA2", "task": "Layout กับทางโรงพิมพ์ในส่วนของเนื้อหา", "team": "แผนแม่บท", "group": "รายงานประจำปี 2569", "basis": "own", "status": "รอเริ่ม", "start": "2026-12-01", "due": "2027-01-31", "completed": "", "progress": "", "detail": "ธ.ค. 69 – ม.ค. 70"},
+{"id": "RA2-6", "parent": "RA2", "task": "กยป. ยกร่างชุดเอกสารเพื่อขออนุมัติจัดพิมพ์รายงานประจำปี", "team": "แผนแม่บท", "group": "รายงานประจำปี 2569", "basis": "own", "status": "รอเริ่ม", "start": "2027-02-01", "due": "2027-02-28", "completed": "", "progress": "", "detail": "ก.พ. 70"},
+{"id": "RA2-7", "parent": "RA2", "task": "จัดพิมพ์รูปเล่ม (ร่าง) รายงานประจำปี 2569", "team": "แผนแม่บท", "group": "รายงานประจำปี 2569", "basis": "own", "status": "รอเริ่ม", "start": "2027-03-01", "due": "2027-03-31", "completed": "", "progress": "", "detail": "มี.ค. 70"},
+{"id": "RA3", "parent": "", "task": "กระบวนการเสนอรายงานประจำปี", "team": "แผนแม่บท", "group": "รายงานประจำปี 2569", "basis": "own", "status": "รอเริ่ม", "start": "2027-01-01", "due": "2027-01-31", "completed": "", "progress": "", "detail": "ม.ค. 70 (กระบวนการนำเสนอ)"},
+{"id": "RA3-1", "parent": "RA3", "task": "กยป. ยกร่างหนังสือเพื่อเสนอ (ร่าง) รายงานประจำปี 2569 ต่อ นรม. เพื่อพิจารณาเห็นชอบ", "team": "แผนแม่บท", "group": "รายงานประจำปี 2569", "basis": "parent", "status": "รอเริ่ม", "start": "2027-01-01", "due": "2027-01-31", "completed": "", "progress": "", "detail": ""},
+{"id": "RA3-2", "parent": "RA3", "task": "กยป. เผยแพร่ (ร่าง) รายงานประจำปี 2569 ผ่านช่องทางออนไลน์ และยกร่างหนังสือเพื่อแจ้งการเผยแพร่ต่อ คกก.ยช.", "team": "แผนแม่บท", "group": "รายงานประจำปี 2569", "basis": "own", "status": "รอเริ่ม", "start": "2027-01-01", "due": "2027-01-28", "completed": "", "progress": "", "detail": "เผยแพร่ต่อสาธารณชนภายใน 28 ม.ค. 70"},
+{"id": "RA3-3", "parent": "RA3", "task": "กยป. ยกร่างหนังสือเพื่อเสนอ (ร่าง) รายงานประจำปี 2569 ต่อ ครม. เพื่อพิจารณารับทราบ", "team": "แผนแม่บท", "group": "รายงานประจำปี 2569", "basis": "parent", "status": "รอเริ่ม", "start": "2027-01-01", "due": "2027-01-31", "completed": "", "progress": "", "detail": "แผนไม่ระบุช่วงเวลาชัดเจน"},
+{"id": "MP1", "parent": "", "task": "การจัดเตรียมข้อมูลก่อนนำเสนอ คจย.", "team": "แผนแม่บท", "group": "ปรับปรุงแผนแม่บทฯ", "basis": "own", "status": "กำลังทำ", "start": "2026-10-01", "due": "2027-02-28", "completed": "", "progress": "", "detail": "ต.ค. 69 – ก.พ. 70"},
+{"id": "MP1-1", "parent": "MP1", "task": "ทบทวนยุทธศาสตร์และแผนแม่บทฯ และจัดทำหลักการและแนวทางในการปรับแผนแม่บทฯ", "team": "แผนแม่บท", "group": "ปรับปรุงแผนแม่บทฯ", "basis": "own", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-12-31", "completed": "", "progress": "", "detail": "ต.ค.–ธ.ค. 69"},
+{"id": "MP1-2", "parent": "MP1", "task": "จัดทำเอกสารประกอบการประชุมเสนอต่อ คจย. (อาทิ ระเบียบวาระ PPT)", "team": "แผนแม่บท", "group": "ปรับปรุงแผนแม่บทฯ", "basis": "own", "status": "รอเริ่ม", "start": "2027-01-01", "due": "2027-02-28", "completed": "", "progress": "", "detail": "ม.ค.–ก.พ. 70"},
+{"id": "MP2", "parent": "", "task": "ประชุมเพื่อขอความเห็นชอบหลักการและแนวทางการปรับแผนแม่บทฯ", "team": "แผนแม่บท", "group": "ปรับปรุงแผนแม่บทฯ", "basis": "own", "status": "รอเริ่ม", "start": "2027-02-01", "due": "2027-03-31", "completed": "", "progress": "", "detail": "ก.พ.–มี.ค. 70 · มี 2 ทางเลือก: (1) ประชุม คจย. คณะเดิมก่อนเสนอ คกก.ยช. (2) เสนอ คกก.ยช. เพื่อแต่งตั้ง คจย. ก่อน"},
+{"id": "MP2-1", "parent": "MP2", "task": "ประชุม คจย. คณะเดิม (ทางเลือกที่ 1)", "team": "แผนแม่บท", "group": "ปรับปรุงแผนแม่บทฯ", "basis": "own", "status": "รอเริ่ม", "start": "2027-02-01", "due": "2027-02-28", "completed": "", "progress": "", "detail": "ก.พ. 70 · อยู่ระหว่างการประสานสอบถามเกี่ยวกับกฎหมาย"},
+{"id": "MP2-2", "parent": "MP2", "task": "ประชุม คกก.ยช. ครั้งที่ 1/70 เพื่อให้แต่งตั้ง คจย. 1 คณะ และระเบียบฯ ฉบับใหม่", "team": "แผนแม่บท", "group": "ปรับปรุงแผนแม่บทฯ", "basis": "own", "status": "รอเริ่ม", "start": "2027-02-01", "due": "2027-03-31", "completed": "", "progress": "", "detail": "ก.พ.–มี.ค. 70 · รวมหลักการและแนวทางการปรับแผนแม่บทฯ"},
+{"id": "MP2-3", "parent": "MP2", "task": "เสนอนายกรัฐมนตรีเพื่อกำหนดวันประชุม คกก.ยุทธศาสตร์ชาติ ครั้งที่ 1/2570", "team": "แผนแม่บท", "group": "ปรับปรุงแผนแม่บทฯ", "basis": "own", "status": "รอเริ่ม", "start": "2027-02-01", "due": "2027-03-31", "completed": "", "progress": "", "detail": "ในระหว่าง ก.พ.–มี.ค. 70"},
+{"id": "MP3", "parent": "", "task": "ครม. ให้ความเห็นชอบในการดำเนินการต่อไป", "team": "แผนแม่บท", "group": "ปรับปรุงแผนแม่บทฯ", "basis": "own", "status": "รอเริ่ม", "start": "2027-03-01", "due": "2027-03-31", "completed": "", "progress": "", "detail": "มี.ค. 70"},
+{"id": "MP4", "parent": "", "task": "กระบวนการปรับแก้ไขแผนแม่บทฯ", "team": "แผนแม่บท", "group": "ปรับปรุงแผนแม่บทฯ", "basis": "own", "status": "รอเริ่ม", "start": "2027-03-01", "due": "2027-06-30", "completed": "", "progress": "", "detail": "มี.ค.–มิ.ย. 70"},
+{"id": "MP4-1", "parent": "MP4", "task": "คณะทำงานปรับแก้ไขตามหลักการและแนวทางฯ ที่ คกก.ยช. เห็นชอบ", "team": "แผนแม่บท", "group": "ปรับปรุงแผนแม่บทฯ", "basis": "parent", "status": "รอเริ่ม", "start": "2027-03-01", "due": "2027-06-30", "completed": "", "progress": "", "detail": "ดำเนินการเป็นระยะ ๆ"},
+{"id": "MP4-2", "parent": "MP4", "task": "ประชุมคณะทำงานร่วมกับประธาน คจย. แต่ละคณะ เพื่อติดตามความก้าวหน้าและพิจารณาปรับปรุงรายละเอียดตามข้อคิดเห็นและข้อเสนอแนะ", "team": "แผนแม่บท", "group": "ปรับปรุงแผนแม่บทฯ", "basis": "parent", "status": "รอเริ่ม", "start": "2027-03-01", "due": "2027-06-30", "completed": "", "progress": "", "detail": "ดำเนินการเป็นระยะ ๆ"},
+{"id": "MP5", "parent": "", "task": "ประชุม คจย. 1 คณะ เพื่อขอความเห็นชอบ (ร่าง) แผนแม่บทฯ ฉบับแก้ไขเพิ่มเติม", "team": "แผนแม่บท", "group": "ปรับปรุงแผนแม่บทฯ", "basis": "own", "status": "รอเริ่ม", "start": "2027-05-01", "due": "2027-05-31", "completed": "", "progress": "", "detail": "พ.ศ. 2571 – 2575 · พ.ค. 70"},
+{"id": "MP6", "parent": "", "task": "ประชุม คกก.ยช. ครั้งที่ 2/70 เพื่อขอความเห็นชอบ (ร่าง) แผนแม่บทฯ ฉบับแก้ไขเพิ่มเติม", "team": "แผนแม่บท", "group": "ปรับปรุงแผนแม่บทฯ", "basis": "own", "status": "รอเริ่ม", "start": "2027-05-01", "due": "2027-06-30", "completed": "", "progress": "", "detail": "พ.ค.–มิ.ย. 70"},
+{"id": "MP7", "parent": "", "task": "เสนอ ครม. เพื่อขอความเห็นชอบและประกาศในราชกิจจานุเบกษา", "team": "แผนแม่บท", "group": "ปรับปรุงแผนแม่บทฯ", "basis": "own", "status": "รอเริ่ม", "start": "2027-06-01", "due": "2027-06-30", "completed": "", "progress": "", "detail": "มิ.ย. 70"},
+{"id": "MP8", "parent": "", "task": "ประกาศใช้แผนแม่บทฯ ฉบับแก้ไขเพิ่มเติม", "team": "แผนแม่บท", "group": "ปรับปรุงแผนแม่บทฯ", "basis": "own", "status": "รอเริ่ม", "start": "2027-07-01", "due": "2027-07-31", "completed": "", "progress": "", "detail": "ก.ค. 70"},
+{"id": "MP9", "parent": "", "task": "หน่วยงานของรัฐนำแผนแม่บทฯ ไปประกอบการจัดทำแผนปฏิบัติราชการและจัดทำโครงการ", "team": "แผนแม่บท", "group": "ปรับปรุงแผนแม่บทฯ", "basis": "own", "status": "รอเริ่ม", "start": "2027-08-01", "due": "2027-09-30", "completed": "", "progress": "", "detail": "ส.ค.–ก.ย. 70"},
+{"id": "MP10", "parent": "", "task": "แผนแม่บทฯ ฉบับแก้ไขเพิ่มเติมมีผลบังคับใช้", "team": "แผนแม่บท", "group": "ปรับปรุงแผนแม่บทฯ", "basis": "own", "status": "รอเริ่ม", "start": "2027-10-01", "due": "2027-10-01", "completed": "", "progress": "", "detail": "1 ต.ค. 70"},
+{"id": "BG1", "parent": "", "task": "สศช. พิจารณาจัดทำยุทธศาสตร์การจัดสรรงบประมาณรายจ่ายประจำปีงบประมาณ พ.ศ. 2571", "team": "แผนแม่บท", "group": "ยุทธศาสตร์จัดสรรงบ 71", "basis": "own", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-10-31", "completed": "", "progress": "", "detail": "ต.ค. 69"},
+{"id": "BG1-1", "parent": "BG1", "task": "ทอนค่าเป้าหมาย/ตัวชี้วัดของแผนแม่บทฯ", "team": "แผนแม่บท", "group": "ยุทธศาสตร์จัดสรรงบ 71", "basis": "parent", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-10-31", "completed": "", "progress": "", "detail": ""},
+{"id": "BG1-2", "parent": "BG1", "task": "จัดลำดับความสำคัญของประเด็นเร่งด่วนในยุทธจัดสรรฯ พ.ศ. 2571", "team": "แผนแม่บท", "group": "ยุทธศาสตร์จัดสรรงบ 71", "basis": "parent", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-10-31", "completed": "", "progress": "", "detail": ""},
+{"id": "BG1-3", "parent": "BG1", "task": "จัดลำดับความสำคัญของประเด็นใน 13 หมุดหมายภายใต้แผนพัฒนาฯ ฉบับที่ 13", "team": "แผนแม่บท", "group": "ยุทธศาสตร์จัดสรรงบ 71", "basis": "parent", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-10-31", "completed": "", "progress": "", "detail": ""},
+{"id": "BG2", "parent": "", "task": "สศช. จัดส่งเอกสารประกอบการพิจารณาจัดทำยุทธจัดสรรฯ ไปยังสำนักงบประมาณ", "team": "แผนแม่บท", "group": "ยุทธศาสตร์จัดสรรงบ 71", "basis": "assumed", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-10-31", "completed": "", "progress": "", "detail": "แผนไม่ระบุช่วงเวลาชัดเจน ใช้ช่วง ต.ค. 69 ตามขั้นตอน สศช."},
+{"id": "BG3", "parent": "", "task": "สำนักงบประมาณดำเนินการรวบรวม กำหนดยุทธศาสตร์การจัดสรรงบประมาณรายจ่ายประจำปี และนำเสนอต่อ ครม. ให้ความเห็นชอบต่อไป", "team": "แผนแม่บท", "group": "ยุทธศาสตร์จัดสรรงบ 71", "basis": "own", "status": "รอเริ่ม", "start": "2026-11-01", "due": "2027-09-30", "completed": "", "progress": "", "detail": "พ.ย. 69 – ก.ย. 70"},
+{"id": "BG4", "parent": "", "task": "หน่วยรับงบประมาณใช้เป็นแนวทางในการจัดทำคำขอตั้งงบประมาณรายจ่ายประจำปี", "team": "แผนแม่บท", "group": "ยุทธศาสตร์จัดสรรงบ 71", "basis": "own", "status": "รอเริ่ม", "start": "2027-10-01", "due": "2027-12-31", "completed": "", "progress": "", "detail": "ต.ค.–ธ.ค. 70 · เพื่อเสนอ ครม. ต่อไป"},
+{"id": "P1", "parent": "", "task": "สภาพัฒนาฯ เห็นชอบในร่างแผนฯ 14", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "own", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-10-31", "completed": "", "progress": "", "detail": "ต.ค. 69"},
+{"id": "P1-1", "parent": "P1", "task": "สาระสำคัญของร่างแผนฯ 14 (ใช้ประกอบจัดทำยุทธจัดสรรงบประมาณปี 71)", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "parent", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-10-31", "completed": "", "progress": "", "detail": ""},
+{"id": "P1-2", "parent": "P1", "task": "เห็นชอบร่างแผนฯ 14", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "parent", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-10-31", "completed": "", "progress": "", "detail": ""},
+{"id": "P2", "parent": "", "task": "ปรับปรุงตามความเห็นเพิ่มเติม สร้าง Buy-in และแนวร่วมขับเคลื่อนแผน", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "own", "status": "กำลังทำ", "start": "2026-10-01", "due": "2027-09-30", "completed": "", "progress": "", "detail": "ต.ค. 69 – ก.ย. 70"},
+{"id": "P2-1", "parent": "P2", "task": "ลงพื้นที่ศึกษาการปฏิรูปภาครัฐด้านการท่องเที่ยวเชิงส่งเสริมสุขภาพ (Wellness Tourism)", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "parent", "status": "กำลังทำ", "start": "2026-10-01", "due": "2027-09-30", "completed": "", "progress": "", "detail": ""},
+{"id": "P2-2", "parent": "P2", "task": "ศึกษาประเด็นการปฏิรูปภาครัฐด้านอาหารแห่งอนาคต (Future Food)", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "parent", "status": "กำลังทำ", "start": "2026-10-01", "due": "2027-09-30", "completed": "", "progress": "", "detail": ""},
+{"id": "P2-3", "parent": "P2", "task": "ลงพื้นที่ศึกษาประเด็นด้านอื่น ๆ อาทิ เทคโนโลยีควอนตัม", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "parent", "status": "กำลังทำ", "start": "2026-10-01", "due": "2027-09-30", "completed": "", "progress": "", "detail": ""},
+{"id": "P2-4", "parent": "P2", "task": "หารือกับหน่วยงานที่เกี่ยวข้อง", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "parent", "status": "กำลังทำ", "start": "2026-10-01", "due": "2027-09-30", "completed": "", "progress": "", "detail": ""},
+{"id": "P2-5", "parent": "P2", "task": "กำหนดโครงการ Flagship", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "parent", "status": "กำลังทำ", "start": "2026-10-01", "due": "2027-09-30", "completed": "", "progress": "", "detail": ""},
+{"id": "P2-6", "parent": "P2", "task": "จัดทำยุทธศาสตร์การจัดสรร งปม. ปี 71", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "own", "status": "รอเริ่ม", "start": "2026-11-01", "due": "2026-11-30", "completed": "", "progress": "", "detail": "พ.ย. 69"},
+{"id": "P2-7", "parent": "P2", "task": "ประชุม คกก.กลาง ครั้งที่ 5/69", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "own", "status": "รอเริ่ม", "start": "2026-11-01", "due": "2026-11-30", "completed": "", "progress": "", "detail": "พ.ย. 69"},
+{"id": "P2-8", "parent": "P2", "task": "จัดทำแผนปฏิบัติราชการประจำปี", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "own", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-12-31", "completed": "", "progress": "", "detail": "ต.ค.–ธ.ค. 69"},
+{"id": "P2-9", "parent": "P2", "task": "ก.น.บ. เห็นชอบเป้าหมาย แผน ข้อเสนอโครงการของจังหวัด/กลุ่มจังหวัด", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "own", "status": "รอเริ่ม", "start": "2026-12-01", "due": "2026-12-31", "completed": "", "progress": "", "detail": "ธ.ค. 69"},
+{"id": "P2-10", "parent": "P2", "task": "หน่วยงานรับ งปม. จัดทำคำขอ งปม. ปี 71", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "own", "status": "รอเริ่ม", "start": "2026-12-01", "due": "2027-01-31", "completed": "", "progress": "", "detail": "ธ.ค. 69 – ม.ค. 70"},
+{"id": "P2-11", "parent": "P2", "task": "ประชุม คกก.กลาง ครั้งที่ 6/69", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "own", "status": "รอเริ่ม", "start": "2027-01-01", "due": "2027-01-31", "completed": "", "progress": "", "detail": "ม.ค. 70"},
+{"id": "P2-12", "parent": "P2", "task": "ออกแบบกลไกการขับเคลื่อนในรายละเอียด", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "own", "status": "รอเริ่ม", "start": "2027-01-01", "due": "2027-09-30", "completed": "", "progress": "", "detail": "ม.ค.–ก.ย. 70"},
+{"id": "P3", "parent": "", "task": "เสนอร่างแผนฯ 14 ตามขั้นตอน", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "own", "status": "รอเริ่ม", "start": "2027-02-01", "due": "2027-09-30", "completed": "", "progress": "", "detail": "ก.พ. – ก.ย. 70"},
+{"id": "P3-1", "parent": "P3", "task": "คกก.ยุทธศาสตร์ชาติ คณะรัฐมนตรี เห็นชอบร่างแผนฯ 14", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "own", "status": "รอเริ่ม", "start": "2027-02-01", "due": "2027-04-30", "completed": "", "progress": "", "detail": "ก.พ.–เม.ย. 70"},
+{"id": "P3-2", "parent": "P3", "task": "รัฐสภารับทราบร่างแผนฯ 14 ในสมัยประชุมสามัญ", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "own", "status": "รอเริ่ม", "start": "2027-07-01", "due": "2027-08-31", "completed": "", "progress": "", "detail": "ก.ค.–ส.ค. 70"},
+{"id": "P3-3", "parent": "P3", "task": "นายกรัฐมนตรีนำร่างแผนฯ 14 ขึ้นทูลเกล้าฯ", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "own", "status": "รอเริ่ม", "start": "2027-08-01", "due": "2027-09-30", "completed": "", "progress": "", "detail": "ส.ค.–ก.ย. 70"},
+{"id": "P4", "parent": "", "task": "คาดการณ์ว่าจะประกาศใช้แผนฯ 14", "team": "แผนแม่บท", "group": "ขับเคลื่อนแผน 14 เสาภาครัฐ", "basis": "own", "status": "รอเริ่ม", "start": "2027-10-01", "due": "2027-10-01", "completed": "", "progress": "", "detail": "ต.ค. 70"},
+{"id": "E1", "parent": "", "task": "Management: ชะลอการนำเข้า เชื่อมข้อมูล และรายงานผลในระบบเดิม", "team": "eMENSCR", "group": "เปลี่ยนผ่านสู่ eMENSCR+", "basis": "own", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-12-31", "completed": "", "progress": "", "detail": "ต.ค.–ธ.ค. 69"},
+{"id": "E1-1", "parent": "E1", "task": "ชะลอการนำเข้าแผน/โครงการในระบบเดิม", "team": "eMENSCR", "group": "เปลี่ยนผ่านสู่ eMENSCR+", "basis": "own", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-10-31", "completed": "", "progress": "", "detail": "ต.ค. 69"},
+{"id": "E1-2", "parent": "E1", "task": "เชื่อมข้อมูลรายการโครงการและวงเงินงบประมาณประจำปี 2570 จากระบบ GFMIS เพื่อใช้เป็นข้อมูลตั้งต้นในระบบ", "team": "eMENSCR", "group": "เปลี่ยนผ่านสู่ eMENSCR+", "basis": "own", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-10-31", "completed": "", "progress": "", "detail": "ต.ค. 69"},
+{"id": "E1-3", "parent": "E1", "task": "รายงานผลโครงการปี 69 และผลสัมฤทธิ์แผนระดับ 3 ในระบบเดิม", "team": "eMENSCR", "group": "เปลี่ยนผ่านสู่ eMENSCR+", "basis": "own", "status": "กำลังทำ", "start": "2026-10-01", "due": "2026-12-31", "completed": "", "progress": "", "detail": "ต.ค.–ธ.ค. 69"},
+{"id": "E2", "parent": "", "task": "Training & Pilot: ฝึกอบรมและทดลองใช้งานระบบ", "team": "eMENSCR", "group": "เปลี่ยนผ่านสู่ eMENSCR+", "basis": "own", "status": "รอเริ่ม", "start": "2026-11-03", "due": "2026-12-31", "completed": "", "progress": "", "detail": "3 พ.ย. – ธ.ค. 69"},
+{"id": "E2-1", "parent": "E2", "task": "Workshop ฝึกอบรมหน่วยงานนำร่อง", "team": "eMENSCR", "group": "เปลี่ยนผ่านสู่ eMENSCR+", "basis": "own", "status": "รอเริ่ม", "start": "2026-11-03", "due": "2026-11-04", "completed": "", "progress": "", "detail": "3–4 พ.ย. 69"},
+{"id": "E2-2", "parent": "E2", "task": "ทดลองใช้งานระบบกับหน่วยงานนำร่อง", "team": "eMENSCR", "group": "เปลี่ยนผ่านสู่ eMENSCR+", "basis": "own", "status": "รอเริ่ม", "start": "2026-11-01", "due": "2026-12-31", "completed": "", "progress": "", "detail": "พ.ย.–ธ.ค. 69 · หน่วยงานนำร่อง 7 แห่ง: สศช., สกสว., สำนักงานปลัด พม., การเคหะฯ, มทร.ธัญบุรี, สถาบันพยาบาลศรีวรินทิรา, สถาบันพัฒนาองค์กรชุมชน"},
+{"id": "E2-3", "parent": "E2", "task": "จัดอบรมออนไลน์ให้หน่วยงานทั่วไป", "team": "eMENSCR", "group": "เปลี่ยนผ่านสู่ eMENSCR+", "basis": "own", "status": "รอเริ่ม", "start": "2026-12-01", "due": "2026-12-31", "completed": "", "progress": "", "detail": "ธ.ค. 69"},
+{"id": "E3", "parent": "", "task": "Implementation: เปิดใช้งานระบบ eMENSCR+", "team": "eMENSCR", "group": "เปลี่ยนผ่านสู่ eMENSCR+", "basis": "assumed", "status": "รอเริ่ม", "start": "2027-01-01", "due": "2027-03-31", "completed": "", "progress": "", "detail": "ม.ค. 70 เป็นต้นไป · แสดงถึง มี.ค. 70 ตามช่วงห้องเรียน On Demand"},
+{"id": "E3-1", "parent": "E3", "task": "เปิดใช้งานระบบ eMENSCR+ กับทุกหน่วยงานรัฐ", "team": "eMENSCR", "group": "เปลี่ยนผ่านสู่ eMENSCR+", "basis": "own", "status": "รอเริ่ม", "start": "2027-01-01", "due": "2027-01-31", "completed": "", "progress": "", "detail": "ม.ค. 70 เป็นต้นไป · ระยะขยายผลทั่วประเทศ ครอบคลุมกระทรวง กรม มหาวิทยาลัย รัฐวิสาหกิจ"},
+{"id": "E3-2", "parent": "E3", "task": "เปิดห้องเรียน eMENSCR+ On Demand (ทุกวันพฤหัสบดี)", "team": "eMENSCR", "group": "เปลี่ยนผ่านสู่ eMENSCR+", "basis": "own", "status": "รอเริ่ม", "start": "2027-01-01", "due": "2027-03-31", "completed": "", "progress": "", "detail": "ม.ค.–มี.ค. 70"}
+]
+</script>
+
+<script>
+(function () {
+'use strict';
+var TH_MON = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+var DONE = 'เสร็จแล้ว', DOING = 'กำลังทำ', DAY = 864e5;
+var TEAM_ORDER = ['TPMAP', 'แผนแม่บท', 'eMENSCR'];
+var orderOf = function (tm) { var i = TEAM_ORDER.indexOf(tm); return i < 0 ? 99 : i; };
+var $ = function (s) { return document.querySelector(s); };
+var $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
+
+function parseISO(s) {
+  var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(s || ''));
+  return m ? new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])) : null;
+}
+function iso(d) { return d.toISOString().slice(0, 10); }
+function yy(d) { return String(d.getUTCFullYear() + 543).slice(2); }
+function thDate(d) { return d.getUTCDate() + ' ' + TH_MON[d.getUTCMonth()] + ' ' + yy(d); }
+function monYear(d) { return TH_MON[d.getUTCMonth()] + ' ' + yy(d); }
+function todayISO() { var n = new Date(); return iso(new Date(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()))); }
+function fmt(n) { return Number(n).toLocaleString('en-US'); }
+
+var RAW = [];
+try { RAW = JSON.parse($('#tasks-data').textContent); } catch (e) { console.error('อ่านข้อมูลไม่ได้', e); }
+
+var state = { ref: todayISO(), fy: '10-01', near: 7, team: 'all', tab: 'doing', allOpen: false, toggled: new Set() };
+
+function norm(r) {
+  return {
+    raw: r, id: String(r.id), parent: String(r.parent || ''), task: String(r.task), team: String(r.team),
+    g: String(r.group || ''), basis: String(r.basis || 'own'), status: String(r.status),
+    s: parseISO(r.start), d: parseISO(r.due), c: r.completed ? parseISO(r.completed) : null,
+    p: r.progress === '' || r.progress == null ? null : Number(r.progress)
+  };
+}
+function build(rows) {
+  var byId = new Map(rows.map(function (r) { return [r.id, r]; }));
+  var kids = new Map(), num = new Map(), counter = new Map();
+  rows.forEach(function (r) {
+    if (r.parent && byId.has(r.parent)) {
+      if (!kids.has(r.parent)) kids.set(r.parent, []);
+      kids.get(r.parent).push(r);
+    } else {
+      var k = r.team + '|' + r.g;
+      var n = (counter.get(k) || 0) + 1;
+      counter.set(k, n);
+      num.set(r.id, String(n));
+    }
+  });
+  kids.forEach(function (arr, pid) { arr.forEach(function (r, i) { num.set(r.id, num.get(pid) + '.' + (i + 1)); }); });
+  return { byId: byId, kids: kids, num: num };
+}
+function fyStartOf(ref, fy) {
+  var parts = fy.split('-').map(Number);
+  var s = new Date(Date.UTC(ref.getUTCFullYear(), parts[0] - 1, parts[1]));
+  if (s > ref) s = new Date(Date.UTC(ref.getUTCFullYear() - 1, parts[0] - 1, parts[1]));
+  return s;
+}
+function basisNote(r) { return r.basis === 'parent' ? ' (ตามช่วงของหัวข้อใหญ่)' : r.basis === 'assumed' ? ' (ประมาณการ)' : ''; }
+
+function el(tag, cls, text) {
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+function metaEl(r) {
+  var m = el('div', 'meta');
+  m.append('เริ่ม ' + String(r.raw.start) + ' · ครบกำหนด ' + String(r.raw.due) + basisNote(r));
+  return m;
+}
+function flagEl(r, kind, ref, near) {
+  var f = el('span', 'flag');
+  if (kind === 'done') {
+    f.classList.add('ok');
+    f.textContent = 'เสร็จเมื่อ ' + String(r.raw.completed);
+    var late = Math.round((r.c - r.d) / DAY);
+    if (late > 0) f.textContent += ' (ช้า ' + late + ' วัน)';
+  } else {
+    var dl = Math.round((r.d - ref) / DAY);
+    if (dl < 0) { f.classList.add('bad'); f.textContent = 'เลยกำหนด ' + (-dl) + ' วัน'; }
+    else if (dl === 0) { f.classList.add('warn'); f.textContent = 'ครบกำหนดวันนี้'; }
+    else { f.classList.add(dl <= near ? 'warn' : 'mute'); f.textContent = 'เหลือ ' + dl + ' วัน'; }
+  }
+  return f;
+}
+function progEl(r) {
+  if (r.p === null) return null;
+  var prog = el('span', 'prog'), bar = el('span', 'bar'), fill = el('span', 'bar-fill');
+  fill.style.width = Math.max(0, Math.min(100, r.p)) + '%';
+  bar.append(fill);
+  prog.append(bar, String(r.raw.progress) + '%');
+  return prog;
+}
+function sectionEl(m, subs, num, kind, ref, near) {
+  var sec = el('div', 'sec'), head = el('div', 'sec-head');
+  head.append(el('span', 'no', num.get(m.id) + '.'), el('span', 'sec-title', m.task));
+  if (!subs.length) { var f = flagEl(m, kind, ref, near); f.classList.add('push'); head.append(f); }
+  sec.append(head, metaEl(m));
+  if (m.raw.detail) sec.append(el('div', 'detail', m.raw.detail));
+  if (subs.length) {
+    var ul = el('div', 'subs');
+    subs.forEach(function (k) {
+      var li = el('div', 'sub');
+      var main = el('div');
+      main.append(el('div', 'name', k.task), metaEl(k));
+      if (k.raw.detail) main.append(el('div', 'detail', k.raw.detail));
+      var side = el('div', 'side');
+      side.append(flagEl(k, kind, ref, near));
+      var pr = progEl(k); if (pr) side.append(pr);
+      li.append(el('span', 'no', num.get(k.id)), main, side);
+      ul.append(li);
+    });
+    sec.append(ul);
+  }
+  return sec;
+}
+
+/* ---------- Gantt (vanilla SVG) ---------- */
+var NS = 'http://www.w3.org/2000/svg';
+function sv(tag, attrs, style, parent) {
+  var e = document.createElementNS(NS, tag), k;
+  for (k in attrs) e.setAttribute(k, attrs[k]);
+  if (style) for (k in style) e.style.setProperty(k, style[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+var tip = $('#tip');
+function showTip(ev, r, model) {
+  tip.replaceChildren();
+  tip.append(el('div', 'tip-t', (model.num.get(r.id) || '') + ' ' + r.task));
+  tip.append(el('div', null, r.team + ' · ' + r.g + ' · ' + r.status));
+  tip.append(el('div', null, thDate(r.s) + ' – ' + thDate(r.d) + basisNote(r) + (r.p === null ? '' : ' · ' + r.p + '%')));
+  tip.hidden = false;
+  var w = tip.offsetWidth, h = tip.offsetHeight;
+  var x = Math.min(ev.clientX + 12, window.innerWidth - w - 8);
+  var y = ev.clientY + 16;
+  if (y + h > window.innerHeight - 8) y = ev.clientY - h - 12;
+  tip.style.left = Math.max(8, x) + 'px';
+  tip.style.top = Math.max(8, y) + 'px';
+}
+function isOpen(id) { return state.allOpen !== state.toggled.has(id); }
+
+function drawGantt(box, rows, model, ref, fyStart) {
+  box.replaceChildren();
+  if (!rows.length) { box.append(el('div', 'empty', 'ไม่มีงานในทีมที่เลือก')); return; }
+  var W = Math.max(760, box.clientWidth || 900);
+  var labelW = Math.round(Math.min(340, Math.max(150, W * 0.36)));
+  var top = 44, right = 14;
+  var teams = [];
+  rows.forEach(function (r) { if (teams.indexOf(r.team) < 0) teams.push(r.team); });
+  teams.sort(function (a, b) { return orderOf(a) - orderOf(b); });
+  var items = [];
+  teams.forEach(function (tm) {
+    items.push({ team: tm });
+    var rs = rows.filter(function (r) { return r.team === tm; });
+    var gs = [];
+    rs.forEach(function (r) { if (gs.indexOf(r.g) < 0) gs.push(r.g); });
+    gs.forEach(function (g) {
+      items.push({ group: g });
+      rs.filter(function (r) { return r.g === g && !r.parent; }).forEach(function (m) {
+        var ks = model.kids.get(m.id) || [];
+        items.push({ r: m, major: true, kids: ks.length });
+        if (ks.length && isOpen(m.id)) ks.forEach(function (k) { items.push({ r: k, sub: true }); });
+      });
+    });
+  });
+  var yy2 = top;
+  items.forEach(function (it) { it.y = yy2; it.h = it.group || it.sub ? 24 : 28; yy2 += it.h; });
+  var H = yy2 + 4;
+  var starts = rows.map(function (r) { return r.s.getTime(); }).concat([ref.getTime()]);
+  var ends = rows.map(function (r) { return r.d.getTime(); }).concat([ref.getTime()]);
+  var monthBefore = new Date(Date.UTC(fyStart.getUTCFullYear(), fyStart.getUTCMonth() - 1, fyStart.getUTCDate())).getTime();
+  var lo = Math.max(Math.min.apply(null, starts), monthBefore);
+  var hi = Math.max.apply(null, ends) + 3 * DAY;
+  var x0 = labelW, x1 = W - right;
+  var X = function (t) { return x0 + (t - lo) / (hi - lo) * (x1 - x0); };
+  var clip = function (t) { return t < lo ? lo : t; };
+  var colorOf = function (r) {
+    if (r.status === DONE) return 'var(--done)';
+    if (r.d.getTime() < ref.getTime()) return 'var(--crit)';
+    return r.status === DOING ? 'var(--doing)' : 'var(--todo)';
+  };
+
+  var svg = sv('svg', { 'class': 'svg', width: W, height: H, viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Timeline ของงานแยกตามทีม กลุ่มงาน และหัวข้อใหญ่' }, null, box);
+
+  items.forEach(function (it) {
+    if (it.r) return;
+    sv('rect', { x: 0, y: it.y, width: W, height: it.h, 'fill-opacity': it.team ? 0.9 : 0.4 }, { fill: 'var(--grid)' }, svg);
+    var t = sv('text', { 'class': it.team ? 'grouplab' : 'sublab', x: it.team ? 6 : 16, y: it.y + it.h / 2 + 4 }, null, svg);
+    t.textContent = it.team ? 'ทีม ' + it.team : it.group;
+  });
+
+  var step = W < 760 ? 3 : W < 960 ? 2 : 1;
+  var d0 = new Date(lo);
+  var m = new Date(Date.UTC(d0.getUTCFullYear(), d0.getUTCMonth() + (d0.getUTCDate() > 1 ? 1 : 0), 1));
+  for (; m.getTime() <= hi; m = new Date(Date.UTC(m.getUTCFullYear(), m.getUTCMonth() + 1, 1))) {
+    if (step > 1 && m.getUTCMonth() % step !== 0) continue;
+    var tx = X(m.getTime());
+    sv('line', { x1: tx, x2: tx, y1: top - 8, y2: H, 'stroke-width': 1 }, { stroke: 'var(--grid)' }, svg);
+    var tl = sv('text', { x: tx, y: top - 14, 'text-anchor': 'middle' }, null, svg);
+    tl.textContent = monYear(m);
+  }
+
+  if (fyStart.getTime() > lo && fyStart.getTime() < hi) {
+    var fx = X(fyStart.getTime());
+    sv('line', { x1: fx, x2: fx, y1: 18, y2: H, 'stroke-dasharray': '2 3' }, { stroke: 'var(--axis)' }, svg);
+    var ft = sv('text', { x: fx - 4, y: 10, 'text-anchor': 'end' }, null, svg);
+    ft.textContent = 'เริ่มปีงบประมาณ';
+  }
+  var rx = X(ref.getTime());
+  sv('line', { x1: rx, x2: rx, y1: 18, y2: H, 'stroke-width': 1.5, 'stroke-dasharray': '5 3' }, { stroke: 'var(--ref)' }, svg);
+  var rt = sv('text', { x: rx > W - 90 ? rx - 4 : rx + 4, y: 10, 'text-anchor': rx > W - 90 ? 'end' : 'start' }, null, svg);
+  rt.textContent = 'วันที่อ้างอิง';
+
+  items.forEach(function (it) {
+    if (!it.r) return;
+    var r = it.r, isSub = !!it.sub, y0 = it.y, rowH = it.h;
+    sv('line', { x1: 0, x2: W, y1: y0 + rowH, y2: y0 + rowH, 'stroke-opacity': 0.6 }, { stroke: 'var(--grid)' }, svg);
+    var n = model.num.get(r.id) || '';
+    var caret = it.kids ? (isOpen(r.id) ? '▾ ' : '▸ ') : '';
+    var full = isSub ? n + ' ' + r.task : caret + n + '. ' + r.task;
+    var xoff = isSub ? 24 : 6;
+    var lab = sv('text', { 'class': isSub ? 'sublab2' : 'rowlab', x: xoff, y: y0 + rowH / 2 + 4 }, null, svg);
+    lab.textContent = full;
+    var tt = full;
+    while (lab.getComputedTextLength() > labelW - xoff - 8 && tt.length > 3) { tt = tt.slice(0, -1); lab.textContent = tt + '…'; }
+    var c = colorOf(r);
+    var bx = X(clip(r.s.getTime()));
+    var bw = Math.max(6, X(clip(r.d.getTime())) - bx);
+    var bh = isSub ? 10 : 14, by = y0 + (rowH - bh) / 2;
+    var known = r.p !== null;
+    var bar = sv('rect', { x: bx, y: by, width: bw, height: bh, rx: 4, 'fill-opacity': known ? 0.25 : r.basis === 'parent' ? 0.3 : r.basis === 'assumed' ? 0.55 : 0.85 }, { fill: c }, svg);
+    if (r.basis !== 'own') { bar.style.stroke = c; bar.setAttribute('stroke-width', 1); bar.setAttribute('stroke-dasharray', '3 2'); }
+    if (known && r.p) sv('rect', { x: bx, y: by, width: Math.max(4, bw * Math.min(r.p, 100) / 100), height: bh, rx: 4 }, { fill: c }, svg);
+    var hit = sv('rect', { x: 0, y: y0, width: W, height: rowH, fill: 'transparent' }, { cursor: it.kids ? 'pointer' : 'default' }, svg);
+    hit.addEventListener('mousemove', function (ev) { showTip(ev, r, model); });
+    hit.addEventListener('mouseleave', function () { tip.hidden = true; });
+    hit.addEventListener('click', function () {
+      if (!it.kids) return;
+      if (state.toggled.has(r.id)) state.toggled.delete(r.id); else state.toggled.add(r.id);
+      render();
+    });
+  });
+
+  var leg = el('div', 'legend');
+  [['กำลังทำ', 'var(--doing)'], ['รอเริ่ม', 'var(--todo)'], ['เสร็จแล้ว', 'var(--done)'], ['เลยกำหนด', 'var(--crit)']].forEach(function (it) {
+    var s = el('span'), sw = el('span', 'sw'); sw.style.background = it[1]; s.append(sw, it[0]); leg.append(s);
+  });
+  var dl = el('span'), dsw = el('span', 'sw sw-dash'); dl.append(dsw, 'เส้นประ = ตามช่วงของหัวข้อใหญ่ หรือประมาณการ'); leg.append(dl);
+  box.append(leg);
+}
+
+/* ---------- render ---------- */
+function render() {
+  var ref = parseISO(state.ref) || parseISO(todayISO());
+  var fy = state.fy === '01-01' ? '01-01' : '10-01';
+  var near = state.near > 0 ? state.near : 7;
+  var refIn = $('#c-ref');
+  if (document.activeElement !== refIn) refIn.value = iso(ref);
+  $('#c-fy').value = fy;
+  $('#c-near').value = String(near);
+  $('#c-expand').textContent = state.allOpen ? 'ยุบหัวข้อย่อยทั้งหมด' : 'ขยายหัวข้อย่อยทั้งหมด';
+
+  var all = RAW.map(norm).filter(function (r) { return r.s && r.d; });
+  var model = build(all);
+  var order = new Map(all.map(function (r, i) { return [r.id, i]; }));
+  var gidx = new Map();
+  all.forEach(function (r) { var k = r.team + '|' + r.g; if (!gidx.has(k)) gidx.set(k, gidx.size); });
+
+  // KPIs (all teams, leaf tasks only)
+  var leavesAll = all.filter(function (r) { return !model.kids.has(r.id); });
+  var cnt = function (s) { return leavesAll.filter(function (r) { return r.status === s; }).length; };
+  $('#k-total').textContent = fmt(leavesAll.length);
+  $('#k-majors').textContent = fmt(all.filter(function (r) { return !r.parent; }).length);
+  $('#k-teams').textContent = fmt(new Set(all.map(function (r) { return r.team; })).size);
+  $('#k-doing').textContent = fmt(cnt(DOING));
+  $('#k-todo').textContent = fmt(cnt('รอเริ่ม'));
+  $('#k-done').textContent = fmt(cnt(DONE));
+
+  // team select
+  var teams = TEAM_ORDER.filter(function (t) { return all.some(function (r) { return r.team === t; }); })
+    .concat(Array.from(new Set(all.map(function (r) { return r.team; }))).filter(function (t) { return TEAM_ORDER.indexOf(t) < 0; }));
+  var sel = $('#c-team');
+  if (sel.options.length !== teams.length + 1) {
+    sel.replaceChildren(new Option('ทุกทีม', 'all'));
+    teams.forEach(function (t) { sel.append(new Option('ทีม ' + t, t)); });
+  }
+  sel.value = teams.indexOf(state.team) >= 0 ? state.team : 'all';
+  var team = sel.value;
+  var rows = team === 'all' ? all : all.filter(function (r) { return r.team === team; });
+
+  var fyStart = fyStartOf(ref, fy);
+  var fyYear = fy === '10-01' ? fyStart.getUTCFullYear() + 544 : fyStart.getUTCFullYear() + 543;
+  var days = function (r) { return Math.round((r.d - ref) / DAY); };
+  var leaves = rows.filter(function (r) { return !model.kids.has(r.id); });
+  var open = leaves.filter(function (r) { return r.status !== DONE; });
+  var lists = {
+    doing: leaves.filter(function (r) { return r.status === DOING; }),
+    near: open.filter(function (r) { return days(r) <= near; }),
+    done: leaves.filter(function (r) { return r.status === DONE && r.c && r.c >= fyStart && r.c <= ref; })
+  };
+  var overdue = open.filter(function (r) { return days(r) < 0; }).length;
+  $('#n-doing').textContent = lists.doing.length;
+  $('#n-near').textContent = lists.near.length;
+  $('#n-done').textContent = lists.done.length;
+  $('#l-near').textContent = 'งานที่ใกล้เลยกำหนด (ภายใน ' + near + ' วัน รวมที่เลยแล้ว)';
+  $('#l-done').textContent = 'งานที่เสร็จในปีงบประมาณ ' + fyYear;
+  $('#take').textContent = 'กำลังทำ ' + lists.doing.length + ' งาน เลยกำหนดแล้ว ' + overdue + ' งาน และใกล้ครบกำหนดอีก ' +
+    (lists.near.length - overdue) + ' งาน' + (team === 'all' ? '' : ' (ทีม' + team + ')');
+
+  var notes = {
+    doing: 'งานย่อยที่สถานะกำลังทำ แยกตามหัวข้อใหญ่ตามลำดับในแผน',
+    near: 'งานย่อยที่ยังไม่เสร็จ และครบกำหนดภายใน ' + near + ' วันนับจากวันที่อ้างอิง หรือเลยกำหนดไปแล้ว',
+    done: 'งานย่อยที่เสร็จตั้งแต่ ' + iso(fyStart) + ' ถึง ' + iso(ref) + ' (ปีงบประมาณ ' + fyYear + ')'
+  };
+  $('#checker-note').textContent = notes[state.tab];
+  $$('.tab').forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.tab === state.tab)); });
+
+  var list = $('#list');
+  list.replaceChildren();
+  var kind = state.tab === 'done' ? 'done' : 'open';
+  var matched = new Set(lists[state.tab].map(function (r) { return r.id; }));
+  var majors = rows.filter(function (r) { return !r.parent; }).sort(function (a, b) {
+    return orderOf(a.team) - orderOf(b.team) || gidx.get(a.team + '|' + a.g) - gidx.get(b.team + '|' + b.g) || order.get(a.id) - order.get(b.id);
+  });
+  var lastKey = '', shown = 0;
+  majors.forEach(function (m) {
+    var ks = model.kids.get(m.id) || [];
+    var subs = ks.filter(function (k) { return matched.has(k.id); });
+    var show = ks.length ? subs.length > 0 : matched.has(m.id);
+    if (!show) return;
+    var key = m.team + '|' + m.g;
+    if (key !== lastKey) { list.append(el('div', 'grp', 'ทีม ' + m.team + ' · ' + m.g)); lastKey = key; }
+    list.append(sectionEl(m, subs, model.num, kind, ref, near));
+    shown += 1;
+  });
+  if (!shown) list.append(el('div', 'empty', 'ไม่มีงานในหมวดนี้'));
+
+  if (!$('#view-dash').hidden) drawGantt($('#gantt'), rows, model, ref, fyStart);
+}
+
+/* ---------- events ---------- */
+$('#c-ref').addEventListener('change', function (e) { if (e.target.value && e.target.validity.valid) { state.ref = e.target.value; render(); } });
+$('#c-ref').addEventListener('blur', function (e) { e.target.value = state.ref; });
+$('#c-fy').addEventListener('change', function (e) { state.fy = e.target.value; render(); });
+$('#c-near').addEventListener('change', function (e) { state.near = Number(e.target.value); render(); });
+$('#c-team').addEventListener('change', function (e) { state.team = e.target.value; render(); });
+$('#c-reset').addEventListener('click', function () {
+  state.ref = todayISO(); state.fy = '10-01'; state.near = 7; state.team = 'all'; state.tab = 'doing';
+  state.allOpen = false; state.toggled.clear(); render();
+});
+$('#c-expand').addEventListener('click', function () { state.allOpen = !state.allOpen; state.toggled.clear(); render(); });
+$$('.tab').forEach(function (b) { b.addEventListener('click', function () { state.tab = b.dataset.tab; render(); }); });
+
+function setView(v) {
+  $('#view-dash').hidden = v !== 'dash';
+  $('#view-pdca').hidden = v !== 'pdca';
+  $$('.vbtn').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.view === v)); });
+  $('#take').hidden = v !== 'dash';
+  $('.title').hidden = v !== 'dash';
+  if (history.replaceState) history.replaceState(null, '', v === 'pdca' ? '#pdca' : location.pathname + location.search);
+  render();
+}
+$$('.vbtn').forEach(function (b) { b.addEventListener('click', function () { setView(b.dataset.view); }); });
+
+var rt;
+window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(render, 120); });
+
+setView(location.hash === '#pdca' ? 'pdca' : 'dash');
+})();
+</script>
+</body>
+</html>
