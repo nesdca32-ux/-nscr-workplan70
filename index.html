@@ -143,10 +143,21 @@ footer.foot{font-size:12.5px;color:var(--muted)}
 .pd-sw-done{background:var(--done-bg);border:1px solid var(--line)}
 .pd-sw-doing{background:var(--legend-doing)}
 .pd-sw-todo{border:2px dashed var(--muted)}
+.editbar{position:sticky;top:0;z-index:30;background:var(--chip-bg);color:var(--chip-fg);border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:13px;box-shadow:var(--shadow)}
+.eb-btn{font:inherit;font-size:13px;border:1px solid currentColor;background:transparent;color:inherit;border-radius:8px;padding:4px 10px;cursor:pointer}
+.tools{display:inline-flex;gap:8px;align-items:center}
+.st-sel{font:inherit;font-size:12.5px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:2px 6px}
 </style>
 </head>
 <body>
 <div class="app">
+  <div class="editbar" id="editbar" hidden>
+    <strong>โหมดแก้ไขสถานะ</strong>
+    <span>แก้ในแท็บ Plan checker → "ทุกงาน" · การแก้ไขอยู่ในเครื่องนี้เท่านั้น จนกว่าจะอัปโหลดไฟล์ใหม่ขึ้น GitHub · แก้แล้ว <b id="eb-n">0</b> รายการ</span>
+    <button class="eb-btn" id="eb-dl" type="button">ดาวน์โหลด index.html ที่อัปเดต</button>
+    <button class="eb-btn" id="eb-copy" type="button">คัดลอกข้อมูลงาน</button>
+    <button class="eb-btn" id="eb-clear" type="button">ล้างการแก้ไข</button>
+  </div>
   <div class="top">
     <div>
       <h1 class="title">แผนงาน กยป. ปีงบประมาณ 2570</h1>
@@ -197,6 +208,7 @@ footer.foot{font-size:12.5px;color:var(--muted)}
         <button class="tab" type="button" role="tab" data-tab="doing" aria-selected="true"><span class="tab-n" id="n-doing">—</span><span class="tab-l">งานที่อยู่ระหว่างจัดทำ</span></button>
         <button class="tab" type="button" role="tab" data-tab="near" aria-selected="false"><span class="tab-n" id="n-near">—</span><span class="tab-l" id="l-near">งานที่ใกล้เลยกำหนด</span></button>
         <button class="tab" type="button" role="tab" data-tab="done" aria-selected="false"><span class="tab-n" id="n-done">—</span><span class="tab-l" id="l-done">งานที่เสร็จในปีงบประมาณนี้</span></button>
+        <button class="tab" type="button" role="tab" data-tab="all" aria-selected="false" id="tab-all" hidden><span class="tab-n" id="n-all">—</span><span class="tab-l">ทุกงาน (โหมดแก้ไข)</span></button>
       </div>
       <div class="list" id="list" role="tabpanel"></div>
     </section>
@@ -210,17 +222,18 @@ footer.foot{font-size:12.5px;color:var(--muted)}
     <div class="pd-scroll">
       <div class="pd-board">
         <div class="pd-axis"><div class="pd-axis-row"><div class="pd-axis-sp pd-dark">ปีงบประมาณ 2570</div><div class="pd-axis-g"><div class="pd-q">ไตรมาส 1</div><div class="pd-q">ไตรมาส 2</div><div class="pd-q">ไตรมาส 3</div><div class="pd-q">ไตรมาส 4</div></div></div><div class="pd-axis-row"><div class="pd-axis-sp pd-mut">ต.ค. 69 – ก.ย. 70</div><div class="pd-axis-g"><div class="pd-m">ต.ค. 69</div><div class="pd-m">พ.ย. 69</div><div class="pd-m">ธ.ค. 69</div><div class="pd-m">ม.ค. 70</div><div class="pd-m">ก.พ. 70</div><div class="pd-m">มี.ค. 70</div><div class="pd-m">เม.ย. 70</div><div class="pd-m">พ.ค. 70</div><div class="pd-m">มิ.ย. 70</div><div class="pd-m">ก.ค. 70</div><div class="pd-m">ส.ค. 70</div><div class="pd-m">ก.ย. 70</div></div></div></div>
-        <section class="pd-lane pd-lane-p" aria-label="Plan"><div class="pd-blk"><div class="pd-blk-l">P</div><div class="pd-blk-w">Plan</div></div><div class="pd-rgt"><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">ปรับปรุงแผนแม่บทฯ</div><div class="pd-lbl-t">ทีมแผนแม่บทฯ</div></div><div class="pd-tl"><div class="pd-bx" style="grid-column: 1 / 6; grid-row: 1">ทบทวนยุทธศาสตร์ชาติและแผนแม่บทฯ · เตรียมข้อมูล · เอกสารเสนอ คจย.</div><div class="pd-bx pd-todo" style="grid-column: 6 / 10; grid-row: 1">ปรับแก้ไขแผนแม่บทฯ (คณะทำงาน · ประชุมกับประธาน คจย.)</div><div class="pd-bx pd-todo" style="grid-column: 10 / 11; grid-row: 1">ประกาศใช้</div><div class="pd-bx pd-todo" style="grid-column: 11 / 13; grid-row: 1">หน่วยงานนำไปปฏิบัติ → มีผล 1 ต.ค. 70</div><div class="pd-bx pd-todo" style="grid-column: 5 / 7; grid-row: 2">ประชุม คจย./คกก.ยช. 1/70 → ครม. ให้ความเห็นชอบ</div><div class="pd-bx pd-todo" style="grid-column: 8 / 10; grid-row: 2">คกก.ยช. 2/70 → ครม. + ราชกิจจาฯ</div></div></div><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">ขับเคลื่อนแผนฯ 14 เสาภาครัฐ</div><div class="pd-lbl-t">ทีมแผนแม่บทฯ</div></div><div class="pd-tl"><div class="pd-bx" style="grid-column: 1 / 2; grid-row: 1">สภาพัฒนาฯ เห็นชอบร่าง</div><div class="pd-bx pd-todo" style="grid-column: 5 / 8; grid-row: 1">คกก.ยุทธศาสตร์ชาติ/ครม. เห็นชอบร่างแผนฯ 14</div><div class="pd-bx pd-todo" style="grid-column: 10 / 13; grid-row: 1">รัฐสภารับทราบ → ทูลเกล้าฯ → คาดประกาศใช้ ต.ค. 70</div><div class="pd-bx" style="grid-column: 1 / 13; grid-row: 2">ปรับปรุงตามความเห็นเพิ่มเติม · สร้าง Buy-in · กำหนดโครงการ Flagship · ออกแบบกลไกขับเคลื่อน (ต.ค. 69 – ก.ย. 70)</div></div></div></div></section>
-<section class="pd-lane pd-lane-d" aria-label="DO"><div class="pd-blk"><div class="pd-blk-l">D</div><div class="pd-blk-w">DO</div></div><div class="pd-rgt"><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">TPMAP</div><div class="pd-lbl-t">ทีม TPMAP</div></div><div class="pd-tl"><div class="pd-bx" style="grid-column: 1 / 5; grid-row: 1">งานจ้างปรับปรุงและบำรุงรักษาระบบ TPMAP (ถึง 7 ม.ค. 70)</div><div class="pd-bx" style="grid-column: 1 / 7; grid-row: 2">งานจ้างศึกษายกระดับธรรมาภิบาลข้อมูล (ก.ย. 69 – 16 มี.ค. 70)</div><div class="pd-bx pd-hl" style="grid-column: 1 / 13; grid-row: 3">พัฒนา TPMAP+ 2 ปี (ปีงบ 70–71): ระยะแรก</div><div class="pd-bx pd-todo" style="grid-column: 1 / 7; grid-row: 4">ทบทวนวิธีการคำนวณคนเป้าหมายของระบบ TPMAP (6 เดือนแรก)</div><div class="pd-bx pd-todo" style="grid-column: 7 / 13; grid-row: 4">พัฒนาระบบ TPMAP+ ตามแนวทางการทบทวน (6 เดือนหลัง – ต่อเนื่องถึงปี 2571)</div><div class="pd-bx" style="grid-column: 1 / 2; grid-row: 5">TPMAP+ ตั้ง คกก. TOR</div><div class="pd-bx pd-todo" style="grid-column: 2 / 3; grid-row: 5">จัดทำ TOR</div><div class="pd-bx pd-todo" style="grid-column: 3 / 4; grid-row: 5">คัดเลือก</div><div class="pd-bx pd-todo" style="grid-column: 4 / 5; grid-row: 5">ลงนามสัญญา</div></div></div><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">ยุทธศาสตร์จัดสรรงบ 71</div><div class="pd-lbl-t">ทีมแผนแม่บทฯ</div></div><div class="pd-tl"><div class="pd-bx" style="grid-column: 1 / 2; grid-row: 1">สศช. ทอนเป้าหมาย</div><div class="pd-bx pd-todo" style="grid-column: 2 / 13; grid-row: 1">สำนักงบประมาณรวบรวม กำหนดยุทธศาสตร์ เสนอ ครม. (พ.ย. 69 – ก.ย. 70) → หน่วยรับงบประมาณจัดทำคำขอ ต.ค.–ธ.ค. 70</div></div></div></div></section>
-<section class="pd-lane pd-lane-c" aria-label="CHECK"><div class="pd-blk"><div class="pd-blk-l">C</div><div class="pd-blk-w">CHECK</div></div><div class="pd-rgt"><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">รายงานประจำปี 2569</div><div class="pd-lbl-t">ทีมแผนแม่บทฯ</div></div><div class="pd-tl"><div class="pd-bx" style="grid-column: 1 / 3; grid-row: 1">ขอข้อมูล + ยกร่าง template</div><div class="pd-bx pd-todo" style="grid-column: 4 / 5; grid-row: 1">เผยแพร่ภายใน 28 ม.ค.</div><div class="pd-bx pd-todo" style="grid-column: 2 / 7; grid-row: 2">จัดทำรายงาน: layout กับโรงพิมพ์ · ตรวจเนื้อหา · เสนอผู้บริหาร · จัดพิมพ์รูปเล่ม (พ.ย. 69 – มี.ค. 70)</div></div></div><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">eMENSCR+ (เปลี่ยนผ่านระบบ)</div><div class="pd-lbl-t">ทีม eMENSCR</div></div><div class="pd-tl"><div class="pd-bx" style="grid-column: 1 / 4; grid-row: 1">Management: ชะลอนำเข้าระบบเดิม · เชื่อม GFMIS · รายงานผลโครงการปี 69 + แผนระดับ 3</div><div class="pd-bx pd-todo" style="grid-column: 4 / 13; grid-row: 1">Implementation: เปิดใช้งาน eMENSCR+ กับทุกหน่วยงานรัฐ (ม.ค. 70 เป็นต้นไป)</div><div class="pd-bx pd-todo" style="grid-column: 2 / 4; grid-row: 2">Implementation: Training &amp; Pilot (2 กลุ่มหน่วยงานนำร่องหน่วยงานปฏิบัติ + หน่วยงานกำกับติดตาม) + อบรมออนไลน์</div><div class="pd-bx pd-todo" style="grid-column: 4 / 7; grid-row: 2">ห้องเรียน On Demand ทุกวันพฤหัส</div></div></div></div></section>
-<section class="pd-lane pd-lane-a" aria-label="ACT"><div class="pd-blk"><div class="pd-blk-l">A</div><div class="pd-blk-w">ACT</div></div><div class="pd-rgt"><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">คณะกรรมการยุทธศาสตร์ชาติ (คกก.ยช.)</div><div class="pd-lbl-t">ทีมแผนแม่บทฯ</div></div><div class="pd-tl"><div class="pd-bx pd-todo" style="grid-column: 4 / 5; grid-row: 1">แจ้งเผยแพร่ (ร่าง) รายงานประจำปี 2569 </div><div class="pd-bx pd-todo" style="grid-column: 5 / 7; grid-row: 1">คกก.ยช. 1/70: หลักการปรับแผนแม่บทฯ + ตั้ง คจย.</div><div class="pd-bx pd-todo" style="grid-column: 8 / 10; grid-row: 1">คกก.ยช. 2/70: เห็นชอบ (ร่าง) แผนแม่บทฯ</div><div class="pd-bx pd-todo" style="grid-column: 5 / 8; grid-row: 2">เห็นชอบร่างแผนฯ 14 (คกก.ยช./ครม.)</div><div class="pd-bx pd-todo" style="grid-column: 10 / 13; grid-row: 2">แผนแม่บทฯ มีผล 1 ต.ค. 70 · คาดประกาศใช้แผนฯ 14 ต.ค. 70</div></div></div></div></section>
+        <section class="pd-lane pd-lane-p" aria-label="Plan"><div class="pd-blk"><div class="pd-blk-l">P</div><div class="pd-blk-w">Plan</div></div><div class="pd-rgt"><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">ปรับปรุงแผนแม่บทฯ</div><div class="pd-lbl-t">ทีมแผนแม่บทฯ</div></div><div class="pd-tl"><div class="pd-bx" data-ids="MP1" style="grid-column: 1 / 6; grid-row: 1">ทบทวนยุทธศาสตร์ชาติและแผนแม่บทฯ · เตรียมข้อมูล · เอกสารเสนอ คจย.</div><div class="pd-bx pd-todo" data-ids="MP4" style="grid-column: 6 / 10; grid-row: 1">ปรับแก้ไขแผนแม่บทฯ (คณะทำงาน · ประชุมกับประธาน คจย.)</div><div class="pd-bx pd-todo" data-ids="MP8" style="grid-column: 10 / 11; grid-row: 1">ประกาศใช้</div><div class="pd-bx pd-todo" data-ids="MP9,MP10" style="grid-column: 11 / 13; grid-row: 1">หน่วยงานนำไปปฏิบัติ → มีผล 1 ต.ค. 70</div><div class="pd-bx pd-todo" data-ids="MP2,MP3" style="grid-column: 5 / 7; grid-row: 2">ประชุม คจย./คกก.ยช. 1/70 → ครม. ให้ความเห็นชอบ</div><div class="pd-bx pd-todo" data-ids="MP5,MP6,MP7" style="grid-column: 8 / 10; grid-row: 2">คกก.ยช. 2/70 → ครม. + ราชกิจจาฯ</div></div></div><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">ขับเคลื่อนแผนฯ 14 เสาภาครัฐ</div><div class="pd-lbl-t">ทีมแผนแม่บทฯ</div></div><div class="pd-tl"><div class="pd-bx" data-ids="P1" style="grid-column: 1 / 2; grid-row: 1">สภาพัฒนาฯ เห็นชอบร่าง</div><div class="pd-bx pd-todo" data-ids="P3-1" style="grid-column: 5 / 8; grid-row: 1">คกก.ยุทธศาสตร์ชาติ/ครม. เห็นชอบร่างแผนฯ 14</div><div class="pd-bx pd-todo" data-ids="P3-2,P3-3,P4" style="grid-column: 10 / 13; grid-row: 1">รัฐสภารับทราบ → ทูลเกล้าฯ → คาดประกาศใช้ ต.ค. 70</div><div class="pd-bx" data-ids="P2" style="grid-column: 1 / 13; grid-row: 2">ปรับปรุงตามความเห็นเพิ่มเติม · สร้าง Buy-in · กำหนดโครงการ Flagship · ออกแบบกลไกขับเคลื่อน (ต.ค. 69 – ก.ย. 70)</div></div></div></div></section>
+<section class="pd-lane pd-lane-d" aria-label="DO"><div class="pd-blk"><div class="pd-blk-l">D</div><div class="pd-blk-w">DO</div></div><div class="pd-rgt"><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">TPMAP</div><div class="pd-lbl-t">ทีม TPMAP</div></div><div class="pd-tl"><div class="pd-bx" data-ids="A1" style="grid-column: 1 / 5; grid-row: 1">งานจ้างปรับปรุงและบำรุงรักษาระบบ TPMAP (ถึง 7 ม.ค. 70)</div><div class="pd-bx" data-ids="A2" style="grid-column: 1 / 7; grid-row: 2">งานจ้างศึกษายกระดับธรรมาภิบาลข้อมูล (ก.ย. 69 – 16 มี.ค. 70)</div><div class="pd-bx pd-hl" data-ids="B5" style="grid-column: 1 / 13; grid-row: 3">พัฒนา TPMAP+ 2 ปี (ปีงบ 70–71): ระยะแรก</div><div class="pd-bx pd-todo" data-ids="B5-1" style="grid-column: 1 / 7; grid-row: 4">ทบทวนวิธีการคำนวณคนเป้าหมายของระบบ TPMAP (6 เดือนแรก)</div><div class="pd-bx pd-todo" data-ids="B5-2" style="grid-column: 7 / 13; grid-row: 4">พัฒนาระบบ TPMAP+ ตามแนวทางการทบทวน (6 เดือนหลัง – ต่อเนื่องถึงปี 2571)</div><div class="pd-bx" data-ids="B1" style="grid-column: 1 / 2; grid-row: 5">TPMAP+ ตั้ง คกก. TOR</div><div class="pd-bx pd-todo" data-ids="B2" style="grid-column: 2 / 3; grid-row: 5">จัดทำ TOR</div><div class="pd-bx pd-todo" data-ids="B3" style="grid-column: 3 / 4; grid-row: 5">คัดเลือก</div><div class="pd-bx pd-todo" data-ids="B4" style="grid-column: 4 / 5; grid-row: 5">ลงนามสัญญา</div></div></div><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">ยุทธศาสตร์จัดสรรงบ 71</div><div class="pd-lbl-t">ทีมแผนแม่บทฯ</div></div><div class="pd-tl"><div class="pd-bx" data-ids="BG1,BG2" style="grid-column: 1 / 2; grid-row: 1">สศช. ทอนเป้าหมาย</div><div class="pd-bx pd-todo" data-ids="BG3,BG4" style="grid-column: 2 / 13; grid-row: 1">สำนักงบประมาณรวบรวม กำหนดยุทธศาสตร์ เสนอ ครม. (พ.ย. 69 – ก.ย. 70) → หน่วยรับงบประมาณจัดทำคำขอ ต.ค.–ธ.ค. 70</div></div></div></div></section>
+<section class="pd-lane pd-lane-c" aria-label="CHECK"><div class="pd-blk"><div class="pd-blk-l">C</div><div class="pd-blk-w">CHECK</div></div><div class="pd-rgt"><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">รายงานประจำปี 2569</div><div class="pd-lbl-t">ทีมแผนแม่บทฯ</div></div><div class="pd-tl"><div class="pd-bx" data-ids="RA1" style="grid-column: 1 / 3; grid-row: 1">ขอข้อมูล + ยกร่าง template</div><div class="pd-bx pd-todo" data-ids="RA3" style="grid-column: 4 / 5; grid-row: 1">เผยแพร่ภายใน 28 ม.ค.</div><div class="pd-bx pd-todo" data-ids="RA2" style="grid-column: 2 / 7; grid-row: 2">จัดทำรายงาน: layout กับโรงพิมพ์ · ตรวจเนื้อหา · เสนอผู้บริหาร · จัดพิมพ์รูปเล่ม (พ.ย. 69 – มี.ค. 70)</div></div></div><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">eMENSCR+ (เปลี่ยนผ่านระบบ)</div><div class="pd-lbl-t">ทีม eMENSCR</div></div><div class="pd-tl"><div class="pd-bx" data-ids="E1" style="grid-column: 1 / 4; grid-row: 1">Management: ชะลอนำเข้าระบบเดิม · เชื่อม GFMIS · รายงานผลโครงการปี 69 + แผนระดับ 3</div><div class="pd-bx pd-todo" data-ids="E3-1" style="grid-column: 4 / 13; grid-row: 1">Implementation: เปิดใช้งาน eMENSCR+ กับทุกหน่วยงานรัฐ (ม.ค. 70 เป็นต้นไป)</div><div class="pd-bx pd-todo" data-ids="E2" style="grid-column: 2 / 4; grid-row: 2">Implementation: Training &amp; Pilot (2 กลุ่มหน่วยงานนำร่องหน่วยงานปฏิบัติ + หน่วยงานกำกับติดตาม) + อบรมออนไลน์</div><div class="pd-bx pd-todo" data-ids="E3-2" style="grid-column: 4 / 7; grid-row: 2">ห้องเรียน On Demand ทุกวันพฤหัส</div></div></div></div></section>
+<section class="pd-lane pd-lane-a" aria-label="ACT"><div class="pd-blk"><div class="pd-blk-l">A</div><div class="pd-blk-w">ACT</div></div><div class="pd-rgt"><div class="pd-stream"><div class="pd-lbl"><div class="pd-lbl-n">คณะกรรมการยุทธศาสตร์ชาติ (คกก.ยช.)</div><div class="pd-lbl-t">ทีมแผนแม่บทฯ</div></div><div class="pd-tl"><div class="pd-bx pd-todo" data-ids="RA3-2" style="grid-column: 4 / 5; grid-row: 1">แจ้งเผยแพร่ (ร่าง) รายงานประจำปี 2569 </div><div class="pd-bx pd-todo" data-ids="MP2-2" style="grid-column: 5 / 7; grid-row: 1">คกก.ยช. 1/70: หลักการปรับแผนแม่บทฯ + ตั้ง คจย.</div><div class="pd-bx pd-todo" data-ids="MP6" style="grid-column: 8 / 10; grid-row: 1">คกก.ยช. 2/70: เห็นชอบ (ร่าง) แผนแม่บทฯ</div><div class="pd-bx pd-todo" data-ids="P3-1" style="grid-column: 5 / 8; grid-row: 2">เห็นชอบร่างแผนฯ 14 (คกก.ยช./ครม.)</div><div class="pd-bx pd-todo" data-ids="MP10,P4" style="grid-column: 10 / 13; grid-row: 2">แผนแม่บทฯ มีผล 1 ต.ค. 70 · คาดประกาศใช้แผนฯ 14 ต.ค. 70</div></div></div></div></section>
       </div>
     </div>
     <div class="pd-foot">
-      <strong>สถานะ ณ 19 ต.ค. 69</strong>
+      <strong id="pd-asof">สถานะ ณ 19 ต.ค. 69</strong>
       <span class="pd-foot-i"><span class="pd-sw pd-sw-done"></span>ดำเนินการแล้ว</span>
       <span class="pd-foot-i"><span class="pd-sw pd-sw-doing"></span>อยู่ระหว่างจัดทำ</span>
       <span class="pd-foot-i"><span class="pd-sw pd-sw-todo"></span>รอดำเนินการต่อไป</span>
+      <span class="note" style="flex-basis:100%;margin:0">สีของกล่องดึงจากสถานะใน tasks-data (กล่องที่รวมหลายงาน: ถ้ามีงานใดกำลังทำ = ทึบ, เสร็จครบทุกงาน = เทา)</span>
     </div>
   </div>
 
@@ -357,12 +370,79 @@ function fmt(n) { return Number(n).toLocaleString('en-US'); }
 var RAW = [];
 try { RAW = JSON.parse($('#tasks-data').textContent); } catch (e) { console.error('อ่านข้อมูลไม่ได้', e); }
 
+/* ---------- โหมดแก้ไข (เปิดด้วย ?edit=1 ต่อท้ายลิงก์) ----------
+   เปลี่ยนสถานะงานได้ในเครื่อง แล้วดาวน์โหลด/คัดลอกข้อมูลไปอัปเดตไฟล์บน GitHub
+   ผู้ดูทั่วไป (ลิงก์ปกติ) ไม่เห็นปุ่มเหล่านี้ และไม่ได้รับผลจากการแก้ไขในเครื่องของคุณ */
+var EDIT = /(?:^|[?&])edit(?:=|&|$)/.test(location.search);
+var EDIT_KEY = 'nscr-status-edits-v1';
+var BASE = RAW.map(function (r) { return Object.assign({}, r); });
+var overrides = {};
+function loadOverrides() {
+  try { overrides = JSON.parse(localStorage.getItem(EDIT_KEY) || '{}') || {}; } catch (e) { overrides = {}; }
+  var base = new Map(BASE.map(function (r) { return [String(r.id), r]; }));
+  Object.keys(overrides).forEach(function (id) {
+    var b = base.get(id), o = overrides[id];
+    if (!b || (String(b.status || '') === String(o.status || '') && String(b.completed || '') === String(o.completed || ''))) delete overrides[id];
+  });
+}
+function saveOverrides() { try { localStorage.setItem(EDIT_KEY, JSON.stringify(overrides)); } catch (e) {} }
+function applyOverrides() {
+  RAW = BASE.map(function (r) {
+    var o = overrides[String(r.id)];
+    return o ? Object.assign({}, r, { status: o.status, completed: o.completed }) : r;
+  });
+}
+if (EDIT) { loadOverrides(); applyOverrides(); }
+function setStatus(id, status) {
+  var b = BASE.filter(function (r) { return String(r.id) === id; })[0];
+  if (!b) return;
+  var completed = status === DONE ? (String(b.completed || '') || todayISO()) : '';
+  if (String(b.status || '') === status && String(b.completed || '') === completed) delete overrides[id];
+  else overrides[id] = { status: status, completed: completed };
+  saveOverrides(); applyOverrides(); render();
+}
+function stSel(r) {
+  var s = el('select', 'st-sel');
+  s.setAttribute('aria-label', 'สถานะ: ' + r.task);
+  [DOING, 'รอเริ่ม', DONE].forEach(function (v) { var o = new Option(v, v); s.append(o); });
+  s.value = r.status;
+  s.addEventListener('change', function () { setStatus(r.id, s.value); });
+  return s;
+}
+function dataText() { return '[\n' + RAW.map(function (r) { return JSON.stringify(r); }).join(',\n') + '\n]'; }
+function copyData() {
+  var txt = dataText();
+  var done = function () { alert('คัดลอกข้อมูลแล้ว\nนำไปวางทับข้อมูลระหว่างแท็ก tasks-data ใน index.html บน GitHub (ทั้งก้อนที่ขึ้นต้นด้วย [ และจบด้วย ])'); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(done, function () { window.prompt('คัดลอกข้อความนี้ (Ctrl+C):', txt); });
+  } else { window.prompt('คัดลอกข้อความนี้ (Ctrl+C):', txt); }
+}
+function downloadHtml() {
+  fetch(location.href.split('#')[0], { cache: 'no-store' }).then(function (res) { return res.text(); }).then(function (src) {
+    var re = /(<script type="application\/json" id="tasks-data">)[\s\S]*?(<\/script>)/;
+    if (!re.test(src)) throw new Error('ไม่พบส่วนข้อมูล');
+    var out = src.replace(re, function (m, a, b) { return a + '\n' + dataText() + '\n' + b; });
+    var blob = new Blob([out], { type: 'text/html;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'index.html';
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }).catch(function () {
+    alert('ดาวน์โหลดไฟล์ไม่ได้ในโหมดนี้ (มักเกิดเมื่อเปิดไฟล์จากเครื่องโดยตรง)\nใช้ปุ่ม "คัดลอกข้อมูลงาน" แทนได้');
+  });
+}
+
 var state = { ref: todayISO(), fy: '10-01', near: 7, team: 'all', tab: 'doing', allOpen: false, toggled: new Set() };
 
+function autoStatus(r) {
+  if (r.completed) return DONE;
+  var s = parseISO(r.start);
+  return s && s <= (parseISO(state.ref) || new Date()) ? DOING : 'รอเริ่ม';
+}
 function norm(r) {
   return {
     raw: r, id: String(r.id), parent: String(r.parent || ''), task: String(r.task), team: String(r.team),
-    g: String(r.group || ''), basis: String(r.basis || 'own'), status: String(r.status),
+    g: String(r.group || ''), basis: String(r.basis || 'own'), status: String(r.status || autoStatus(r)),
     s: parseISO(r.start), d: parseISO(r.due), c: r.completed ? parseISO(r.completed) : null,
     p: r.progress === '' || r.progress == null ? null : Number(r.progress)
   };
@@ -405,6 +485,8 @@ function metaEl(r) {
 }
 function flagEl(r, kind, ref, near) {
   var f = el('span', 'flag');
+  if (kind === 'auto') kind = r.status === DONE ? 'done' : 'open';
+  if (kind === 'done' && !r.c) { f.classList.add('ok'); f.textContent = 'เสร็จแล้ว'; return f; }
   if (kind === 'done') {
     f.classList.add('ok');
     f.textContent = 'เสร็จเมื่อ ' + String(r.raw.completed);
@@ -429,7 +511,10 @@ function progEl(r) {
 function sectionEl(m, subs, num, kind, ref, near) {
   var sec = el('div', 'sec'), head = el('div', 'sec-head');
   head.append(el('span', 'no', num.get(m.id) + '.'), el('span', 'sec-title', m.task));
-  if (!subs.length) { var f = flagEl(m, kind, ref, near); f.classList.add('push'); head.append(f); }
+  var tools = el('span', 'push tools');
+  if (!subs.length) tools.append(flagEl(m, kind, ref, near));
+  if (EDIT) tools.append(stSel(m));
+  if (tools.childNodes.length) head.append(tools);
   sec.append(head, metaEl(m));
   if (m.raw.detail) sec.append(el('div', 'detail', m.raw.detail));
   if (subs.length) {
@@ -440,6 +525,7 @@ function sectionEl(m, subs, num, kind, ref, near) {
       main.append(el('div', 'name', k.task), metaEl(k));
       if (k.raw.detail) main.append(el('div', 'detail', k.raw.detail));
       var side = el('div', 'side');
+      if (EDIT) side.append(stSel(k));
       side.append(flagEl(k, kind, ref, near));
       var pr = progEl(k); if (pr) side.append(pr);
       li.append(el('span', 'no', num.get(k.id)), main, side);
@@ -585,6 +671,22 @@ function drawGantt(box, rows, model, ref, fyStart) {
   box.append(leg);
 }
 
+/* ---------- PDCA boxes follow tasks-data ---------- */
+function updatePdca(all) {
+  var byId = new Map(all.map(function (r) { return [r.id, r]; }));
+  $$('.pd-bx[data-ids]').forEach(function (b) {
+    var rows = b.getAttribute('data-ids').split(',').map(function (s) { return byId.get(s.trim()); }).filter(Boolean);
+    if (!rows.length) { console.warn('PDCA: ไม่พบ id', b.getAttribute('data-ids')); return; }
+    var st = rows.every(function (r) { return r.status === DONE; }) ? 'done'
+      : rows.some(function (r) { return r.status === DOING; }) ? 'doing' : 'todo';
+    b.classList.toggle('pd-todo', st === 'todo');
+    b.classList.toggle('pd-done', st === 'done');
+    b.title = rows.map(function (r) { return r.status + ' · ' + r.task; }).join('\n');
+  });
+  var asof = $('#pd-asof');
+  if (asof) asof.textContent = 'สถานะ ณ ' + thDate(parseISO(state.ref) || parseISO(todayISO()));
+}
+
 /* ---------- render ---------- */
 function render() {
   var ref = parseISO(state.ref) || parseISO(todayISO());
@@ -597,6 +699,7 @@ function render() {
   $('#c-expand').textContent = state.allOpen ? 'ยุบหัวข้อย่อยทั้งหมด' : 'ขยายหัวข้อย่อยทั้งหมด';
 
   var all = RAW.map(norm).filter(function (r) { return r.s && r.d; });
+  updatePdca(all);
   var model = build(all);
   var order = new Map(all.map(function (r, i) { return [r.id, i]; }));
   var gidx = new Map();
@@ -632,12 +735,15 @@ function render() {
   var lists = {
     doing: leaves.filter(function (r) { return r.status === DOING; }),
     near: open.filter(function (r) { return days(r) <= near; }),
-    done: leaves.filter(function (r) { return r.status === DONE && r.c && r.c >= fyStart && r.c <= ref; })
+    done: leaves.filter(function (r) { return r.status === DONE && r.c && r.c >= fyStart && r.c <= ref; }),
+    all: leaves
   };
   var overdue = open.filter(function (r) { return days(r) < 0; }).length;
   $('#n-doing').textContent = lists.doing.length;
   $('#n-near').textContent = lists.near.length;
   $('#n-done').textContent = lists.done.length;
+  $('#n-all').textContent = lists.all.length;
+  $('#eb-n').textContent = Object.keys(overrides).length;
   $('#l-near').textContent = 'งานที่ใกล้เลยกำหนด (ภายใน ' + near + ' วัน รวมที่เลยแล้ว)';
   $('#l-done').textContent = 'งานที่เสร็จในปีงบประมาณ ' + fyYear;
   $('#take').textContent = 'กำลังทำ ' + lists.doing.length + ' งาน เลยกำหนดแล้ว ' + overdue + ' งาน และใกล้ครบกำหนดอีก ' +
@@ -646,14 +752,15 @@ function render() {
   var notes = {
     doing: 'งานย่อยที่สถานะกำลังทำ แยกตามหัวข้อใหญ่ตามลำดับในแผน',
     near: 'งานย่อยที่ยังไม่เสร็จ และครบกำหนดภายใน ' + near + ' วันนับจากวันที่อ้างอิง หรือเลยกำหนดไปแล้ว',
-    done: 'งานย่อยที่เสร็จตั้งแต่ ' + iso(fyStart) + ' ถึง ' + iso(ref) + ' (ปีงบประมาณ ' + fyYear + ')'
+    done: 'งานย่อยที่เสร็จตั้งแต่ ' + iso(fyStart) + ' ถึง ' + iso(ref) + ' (ปีงบประมาณ ' + fyYear + ')',
+    all: 'งานย่อยทั้งหมด (โหมดแก้ไข) เปลี่ยนสถานะได้ที่ช่องเลือกของแต่ละงาน หรือของหัวข้อใหญ่ (หัวข้อใหญ่ใช้กำหนดสีกล่องในหน้า PDCA)'
   };
   $('#checker-note').textContent = notes[state.tab];
   $$('.tab').forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.tab === state.tab)); });
 
   var list = $('#list');
   list.replaceChildren();
-  var kind = state.tab === 'done' ? 'done' : 'open';
+  var kind = state.tab === 'done' ? 'done' : state.tab === 'all' ? 'auto' : 'open';
   var matched = new Set(lists[state.tab].map(function (r) { return r.id; }));
   var majors = rows.filter(function (r) { return !r.parent; }).sort(function (a, b) {
     return orderOf(a.team) - orderOf(b.team) || gidx.get(a.team + '|' + a.g) - gidx.get(b.team + '|' + b.g) || order.get(a.id) - order.get(b.id);
@@ -701,6 +808,15 @@ $$('.vbtn').forEach(function (b) { b.addEventListener('click', function () { set
 var rt;
 window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(render, 120); });
 
+if (EDIT) {
+  $('#editbar').hidden = false;
+  $('#tab-all').hidden = false;
+  $('#eb-dl').addEventListener('click', downloadHtml);
+  $('#eb-copy').addEventListener('click', copyData);
+  $('#eb-clear').addEventListener('click', function () {
+    if (window.confirm('ล้างการแก้ไขทั้งหมดในเครื่องนี้?')) { overrides = {}; saveOverrides(); applyOverrides(); render(); }
+  });
+}
 setView(location.hash === '#pdca' ? 'pdca' : 'dash');
 })();
 </script>
