@@ -110,7 +110,17 @@ footer.foot{font-size:12.5px;color:var(--muted)}
 .pd-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px 24px;margin-bottom:12px}
 .pd-title{margin:0;font-size:clamp(18px,2.2vw,28px);font-weight:700;line-height:1.25}
 .pd-pills{display:flex;flex-wrap:wrap;gap:8px}
-.pd-pill{font-size:13px;font-weight:500;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:4px 14px;white-space:nowrap}
+.pd-pill{font:inherit;font-size:13px;font-weight:500;color:var(--fg);border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:4px 14px;white-space:nowrap;cursor:pointer}
+.pd-pill[aria-pressed=true]{background:var(--chip-bg);color:var(--chip-fg);border-color:var(--chip-bg)}
+.pd-filter{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+.pd-only{display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer}
+.pd-only input:disabled{cursor:not-allowed}
+.pd-bx{transition:opacity .15s}
+.pd-bx.pd-dim{opacity:.16;filter:grayscale(.7)}
+.pd-bx.pd-hit{outline:2px solid var(--fg);outline-offset:1px}
+.pd-stream.pd-dim .pd-lbl{opacity:.35}
+.pd-bx.pd-gone{visibility:hidden}
+.pd-stream.pd-gone,.pd-lane.pd-gone{display:none}
 .pd-scroll{overflow-x:auto;padding-bottom:6px}
 .pd-board{min-width:1180px;display:flex;flex-direction:column;gap:10px}
 .pd-axis{display:flex;flex-direction:column;gap:3px}
@@ -217,8 +227,17 @@ footer.foot{font-size:12.5px;color:var(--muted)}
   <div id="view-pdca" hidden>
     <div class="pd-head">
       <h2 class="pd-title">สรุปแผนงาน กยป. ปีงบประมาณ 2570 ตามวงจร PDCA</h2>
-      <div class="pd-pills"><span class="pd-pill">ทีมแผนแม่บทฯ</span><span class="pd-pill">ทีม eMENSCR</span><span class="pd-pill">ทีม TPMAP</span></div>
+      <div class="pd-filter">
+        <div class="pd-pills" role="group" aria-label="เลือกทีมที่ต้องการเน้น">
+          <button class="pd-pill" type="button" data-team="" aria-pressed="true">ทุกทีม</button>
+          <button class="pd-pill" type="button" data-team="แผนแม่บทฯ" aria-pressed="false">ทีมแผนแม่บทฯ</button>
+          <button class="pd-pill" type="button" data-team="eMENSCR" aria-pressed="false">ทีม eMENSCR</button>
+          <button class="pd-pill" type="button" data-team="TPMAP" aria-pressed="false">ทีม TPMAP</button>
+        </div>
+        <label class="pd-only"><input type="checkbox" id="pd-only" disabled> แสดงเฉพาะทีมที่เลือก</label>
+      </div>
     </div>
+    <p class="note" id="pd-teaminfo" hidden style="margin:0 0 10px"></p>
     <div class="pd-scroll">
       <div class="pd-board">
         <div class="pd-axis"><div class="pd-axis-row"><div class="pd-axis-sp pd-dark">ปีงบประมาณ 2570</div><div class="pd-axis-g"><div class="pd-q">ไตรมาส 1</div><div class="pd-q">ไตรมาส 2</div><div class="pd-q">ไตรมาส 3</div><div class="pd-q">ไตรมาส 4</div></div></div><div class="pd-axis-row"><div class="pd-axis-sp pd-mut">ต.ค. 69 – ก.ย. 70</div><div class="pd-axis-g"><div class="pd-m">ต.ค. 69</div><div class="pd-m">พ.ย. 69</div><div class="pd-m">ธ.ค. 69</div><div class="pd-m">ม.ค. 70</div><div class="pd-m">ก.พ. 70</div><div class="pd-m">มี.ค. 70</div><div class="pd-m">เม.ย. 70</div><div class="pd-m">พ.ค. 70</div><div class="pd-m">มิ.ย. 70</div><div class="pd-m">ก.ค. 70</div><div class="pd-m">ส.ค. 70</div><div class="pd-m">ก.ย. 70</div></div></div></div>
@@ -672,19 +691,50 @@ function drawGantt(box, rows, model, ref, fyStart) {
 }
 
 /* ---------- PDCA boxes follow tasks-data ---------- */
+state.pdTeam = '';
+state.pdOnly = false;
 function updatePdca(all) {
   var byId = new Map(all.map(function (r) { return [r.id, r]; }));
   $$('.pd-bx[data-ids]').forEach(function (b) {
     var rows = b.getAttribute('data-ids').split(',').map(function (s) { return byId.get(s.trim()); }).filter(Boolean);
+    b._teams = rows.map(function (r) { return r.team; });
     if (!rows.length) { console.warn('PDCA: ไม่พบ id', b.getAttribute('data-ids')); return; }
     var st = rows.every(function (r) { return r.status === DONE; }) ? 'done'
       : rows.some(function (r) { return r.status === DOING; }) ? 'doing' : 'todo';
     b.classList.toggle('pd-todo', st === 'todo');
     b.classList.toggle('pd-done', st === 'done');
+    b._st = st;
     b.title = rows.map(function (r) { return r.status + ' · ' + r.task; }).join('\n');
   });
   var asof = $('#pd-asof');
   if (asof) asof.textContent = 'สถานะ ณ ' + thDate(parseISO(state.ref) || parseISO(todayISO()));
+
+  /* เน้น / กรองตามทีม */
+  var team = state.pdTeam || '';
+  var only = !!state.pdOnly && !!team;
+  var n = { doing: 0, todo: 0, done: 0, all: 0 };
+  $$('.pd-bx').forEach(function (b) {
+    var hit = !!team && (b._teams || []).indexOf(team) >= 0;
+    b.classList.toggle('pd-dim', !!team && !only && !hit);
+    b.classList.toggle('pd-hit', hit);
+    b.classList.toggle('pd-gone', only && !hit);
+    if (hit) { n.all += 1; n[b._st || 'todo'] += 1; }
+  });
+  $$('.pd-stream').forEach(function (s) {
+    var has = !!s.querySelector('.pd-bx.pd-hit');
+    s.classList.toggle('pd-dim', !!team && !only && !has);
+    s.classList.toggle('pd-gone', only && !has);
+  });
+  $$('.pd-lane').forEach(function (l) {
+    l.classList.toggle('pd-gone', only && !l.querySelector('.pd-stream:not(.pd-gone)'));
+  });
+  $$('.pd-pill[data-team]').forEach(function (p) { p.setAttribute('aria-pressed', String((p.getAttribute('data-team') || '') === team)); });
+  var cb = $('#pd-only');
+  cb.disabled = !team;
+  cb.checked = !!state.pdOnly && !!team;
+  var info = $('#pd-teaminfo');
+  info.hidden = !team;
+  if (team) info.textContent = 'เน้นทีม ' + team + ' · ' + n.all + ' กล่อง (กำลังทำ ' + n.doing + ' · รอเริ่ม ' + n.todo + ' · เสร็จแล้ว ' + n.done + ')';
 }
 
 /* ---------- render ---------- */
@@ -808,6 +858,10 @@ $$('.vbtn').forEach(function (b) { b.addEventListener('click', function () { set
 var rt;
 window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(render, 120); });
 
+$$('.pd-pill[data-team]').forEach(function (p) {
+  p.addEventListener('click', function () { state.pdTeam = p.getAttribute('data-team') || ''; render(); });
+});
+$('#pd-only').addEventListener('change', function (e) { state.pdOnly = e.target.checked; render(); });
 if (EDIT) {
   $('#editbar').hidden = false;
   $('#tab-all').hidden = false;
